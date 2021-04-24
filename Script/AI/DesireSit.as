@@ -8,7 +8,8 @@ class UDesireSit : UDesireBase
 	default Type = EDesire::Sit;
 
 	private TArray<AActor> AllSeatActors;
-	private AActor ClosestSeat;
+	private AActor ClosestAvailableSeat = nullptr;
+	private UActorSlotComponent OccupiedSlot = nullptr;
 	private const float DistanceToSit = 200.f;
 
 
@@ -33,7 +34,11 @@ class UDesireSit : UDesireBase
 
 	FVector GetMoveLocation() const override
 	{
-		return ClosestSeat.GetActorLocation();
+		if (ClosestAvailableSeat == nullptr)
+		{
+			return Controller.GetControlledPawn().GetActorLocation();
+		}
+		return ClosestAvailableSeat.GetActorLocation();
 	}
 
 	private void Tick_Implementation(
@@ -42,23 +47,46 @@ class UDesireSit : UDesireBase
 		const FPersonality& Personality) override
 	{
 		Weight = DesireRequirements.Fatigue;
-		ClosestSeat = AIUtils::GetClosestActor(Controller.GetControlledPawn(), AllSeatActors);
+		if (OccupiedSlot == nullptr)
+		{
+			ClosestAvailableSeat = AIUtils::GetClosestActorWithAvailableSlot(Controller.GetControlledPawn(), AllSeatActors);
+		}
 
 		if (WithinRangeOfSeat())
 		{
+			if (OccupiedSlot == nullptr)
+			{
+				OccupiedSlot = UActorSlotComponent::Get(ClosestAvailableSeat);
+				if (OccupiedSlot == nullptr)
+				{
+					bIsFinished = true;
+				}
+			}
+
+			OccupiedSlot.OccupySlot(Controller.GetControlledPawn());
+
 			DesireRequirements.Fatigue -= 0.05f * (1.f + Personality.Stamina) * DeltaSeconds;
 			DesireRequirements.Boredom += 0.1f * DeltaSeconds;
 
 			if (DesireRequirements.Fatigue <= 0.1f || DesireRequirements.Boredom >= 0.5f)
 			{
+				OccupiedSlot.VacateSlot(Controller.GetControlledPawn());
 				bIsFinished = true;
 			}
+		}
+		else if (OccupiedSlot != nullptr)
+		{
+			OccupiedSlot.VacateSlot(Controller.GetControlledPawn());
+			OccupiedSlot = nullptr;
 		}
 	}
 
 	private bool WithinRangeOfSeat() const
 	{
-		const float Distance = Controller.GetControlledPawn().GetDistanceTo(ClosestSeat);
-		return Distance < DistanceToSit;
+		if (ClosestAvailableSeat == nullptr)
+		{
+			return false;
+		}
+		return Controller.GetControlledPawn().GetDistanceTo(ClosestAvailableSeat) < DistanceToSit;
 	}
 };
