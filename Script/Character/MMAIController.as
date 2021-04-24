@@ -14,35 +14,14 @@ class AMMAIController : AAIController
 	UPROPERTY(DefaultComponent)
 	URelationshipComponent Relationship;
 
-	TArray<UDesireBase> Desires;
-
-
 	UFUNCTION(BlueprintOverride)
-	void Tick(float DeltaSeconds)
+	void ReceivePossess(APawn PossessedPawn)
 	{
-		if (GetControlledPawn() == nullptr)
-		{
-			return;
-		}
-
-		for (int i = Desires.Num(); i > 0; i--)
-		{
-			Desires[i - 1].Tick(DeltaSeconds);
-			if (Desires[i - 1].IsFinished())
-			{
-				Desires.RemoveAt(i - 1);
-			}
-		}
-		if (Desires.Num() == 0)
-		{
-			AddNewDesire(EDesire::Walk);
-		}
-	}
-
-	private void AddNewDesire(EDesire InDesire)
-	{
-		UDesireBase Desire = Desire::Create(InDesire);
-		Desire.BeginPlay(this);
-		Desires.Add(Desire);
+		auto Movement = UCharacterMovementComponent::Get(PossessedPawn);
+		Movement.MaxWalkSpeed *= FMath::GetMappedRangeValueClamped(
+			FVector2D(18.f, 90.f),
+			FVector2D(1.f, 0.2f),
+			Character.Age
+		);
 	}
 };
