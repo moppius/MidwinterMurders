@@ -21,7 +21,7 @@ class UDesireDrink : UDesireBase
 
 	FString GetDisplayString() const override
 	{
-		return CanBePerformed() ? "Drinking" : "Wants to drink";
+		return IsOverlappingDrinkArea() ? "Drinking" : "Wants to drink";
 	}
 
 	FVector GetMoveLocation() const override

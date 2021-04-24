@@ -21,7 +21,7 @@ class UDesireEat : UDesireBase
 
 	FString GetDisplayString() const override
 	{
-		return CanBePerformed() ? "Eating" : "Wants to eat";
+		return IsOverlappingFoodArea() ? "Eating" : "Wants to eat";
 	}
 
 	private void Tick_Implementation(
