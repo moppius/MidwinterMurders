@@ -1,6 +1,7 @@
 namespace Tags
 {
-	const FName Food = n"Food";
+	const FName Bed   = n"Bed";
 	const FName Drink = n"Drink";
-	const FName Seat = n"Seat";
+	const FName Food  = n"Food";
+	const FName Seat  = n"Seat";
 }
