@@ -26,7 +26,7 @@ class UDesireTalk : UDesireBase
 		DesireRequirements.Boredom -= 0.5f;
 	}
 
-	private void Tick_Implementation(
+	protected void Tick_Implementation(
 		float DeltaSeconds,
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override

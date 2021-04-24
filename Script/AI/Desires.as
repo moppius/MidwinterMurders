@@ -138,7 +138,7 @@ class UDesireBase
 	{
 	}
 
-	private void Tick_Implementation(
+	protected void Tick_Implementation(
 		float DeltaSeconds,
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality)
