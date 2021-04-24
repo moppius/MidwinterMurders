@@ -5,10 +5,12 @@ import GameMode.SpawnPoint;
 class AMMGameMode : AGameModeBase
 {
 	UPROPERTY(EditDefaultsOnly, Category=Classes)
-	const TSubclassOf<AMMAIController> DefaultAIControllerClass;
+	private const TSubclassOf<AMMAIController> DefaultAIControllerClass;
 
-
+	UPROPERTY(EditDefaultsOnly, Category=GameMode)
 	private const int MaxAICharacters = 12;
+
+
 	private TArray<AMMAIController> CharacterAIs;
 
 
