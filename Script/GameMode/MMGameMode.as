@@ -75,7 +75,10 @@ class AMMGameMode : AGameModeBase
 	{
 		auto NewAI = Cast<AMMAIController>(SpawnActor(DefaultAIControllerClass.Get()));
 		CharacterAIs.Add(NewAI);
-		AddRelatedAIs(NewAI);
+		if (ShouldAddMoreCharacters())
+		{
+			AddRelatedAIs(NewAI);
+		}
 		return NewAI;
 	}
 };
