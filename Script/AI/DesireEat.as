@@ -24,15 +24,22 @@ class UDesireEat : UDesireBase
 		return IsOverlappingFoodArea() ? "Eating" : "Wants to eat";
 	}
 
+	bool InhibitsMove() const override
+	{
+		return IsOverlappingFoodArea();
+	}
+
 	private void Tick_Implementation(
 		float DeltaSeconds,
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
+		Weight = DesireRequirements.Hunger;
+
 		if (IsOverlappingFoodArea())
 		{
 			DesireRequirements.Boredom -= 0.01f * DeltaSeconds;
-			DesireRequirements.Hunger -= 0.1f * DeltaSeconds;
+			DesireRequirements.Hunger -= 0.2f * DeltaSeconds;
 			if (DesireRequirements.Hunger <= 0.1f)
 			{
 				bIsFinished = true;

@@ -83,6 +83,34 @@ class UCharacterComponent : UActorComponent
 		DesireRequirements.Tick(DeltaSeconds);
 	}
 
+	bool CanMove() const
+	{
+		for (auto Desire : Desires)
+		{
+			if (Desire.InhibitsMove())
+			{
+				return false;
+			}
+		}
+		return Desires.Num() > 0;
+	}
+
+	FVector GetBestMoveLocation() const
+	{
+		UDesireBase HighestDesire;
+		float HighestWeight = -MAX_flt;
+		for (auto Desire : Desires)
+		{
+			const float Weight = Desire.GetWeight();
+			if (Weight > HighestWeight)
+			{
+				HighestDesire = Desire;
+				HighestWeight = Weight;
+			}
+		}
+		return HighestDesire.GetMoveLocation();
+	}
+
 	float GetMaxWalkSpeedModifier() const
 	{
 		return FMath::GetMappedRangeValueClamped(FVector2D(18.f, 90.f), FVector2D(1.f, 0.2f), Age);
@@ -111,10 +139,6 @@ class UCharacterComponent : UActorComponent
 			DesireObject.BeginPlay(AIController, DesireRequirements);
 			ActiveDesires.AddUnique(Desire);
 			Desires.Add(DesireObject);
-			if (!DesireObject.IsFinished() && AIController.GetMoveStatus() == EPathFollowingStatus::Idle)
-			{
-				AIController.MoveToLocation(DesireObject.GetMoveLocation());
-			}
 			OnDesireAdded.Broadcast(this, DesireObject);
 			Desire = GetNewDesire(ActiveDesires);
 		}

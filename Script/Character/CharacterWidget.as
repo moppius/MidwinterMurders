@@ -47,6 +47,7 @@ class UCharacterInfoWidget : UUserWidget
 				true
 			);
 			SetPositionInViewport(ScreenPosition, false);
+			UpdateDesireText();
 		}
 	}
 
@@ -54,23 +55,29 @@ class UCharacterInfoWidget : UUserWidget
 	private void DesireAdded(UCharacterComponent CharacterComponent, UDesireBase NewDesire)
 	{
 		ActiveDesires.Add(NewDesire);
-		UpdateDesireText();
 	}
 
 	UFUNCTION(NotBlueprintCallable)
 	private void DesireRemoved(UCharacterComponent CharacterComponent, UDesireBase RemovedDesire)
 	{
 		ActiveDesires.Remove(RemovedDesire);
-		UpdateDesireText();
 	}
 
 	private void UpdateDesireText()
 	{
-		FString DesireString;
-		for (auto Desire : ActiveDesires)
+		if (Desire::Debug.GetInt() > 0)
 		{
-			DesireString += Desire.GetDisplayString() + ",\n";
+			DesireText.SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+			FString DesireString;
+			for (auto Desire : ActiveDesires)
+			{
+				DesireString += Desire.GetDisplayString() + "(" + Desire.GetWeight() + "), \n";
+			}
+			DesireText.SetText(FText::FromString(DesireString));
 		}
-		DesireText.SetText(FText::FromString(DesireString));
+		else
+		{
+			DesireText.SetVisibility(ESlateVisibility::Collapsed);
+		}
 	}
 };

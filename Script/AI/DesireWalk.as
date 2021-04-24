@@ -16,7 +16,8 @@ class UDesireWalk : UDesireBase
 
 	private void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
 	{
-		if (DesireRequirements.FocusActor != nullptr)
+		if (DesireRequirements.FocusActor != nullptr
+			&& DesireRequirements.FocusActor != Controller.GetControlledPawn())
 		{
 			Controller.MoveToActor(DesireRequirements.FocusActor);
 			return;
@@ -48,11 +49,6 @@ class UDesireWalk : UDesireBase
 		DesireRequirements.Hunger += 0.01f * DeltaSeconds;
 		DesireRequirements.Thirst += 0.01f * DeltaSeconds;
 
-		if (Desire::Debug.GetInt() > 0)
-		{
-			System::DrawDebugSphere(Target, 50.f, 12, FLinearColor::Blue);
-			System::DrawDebugArrow(Controller.GetControlledPawn().GetActorLocation(), Target, 10.f, FLinearColor::Blue);
-		}
 		if (Controller.GetMoveStatus() == EPathFollowingStatus::Idle)
 		{
 			bIsFinished = true;

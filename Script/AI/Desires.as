@@ -58,8 +58,8 @@ struct FDesireRequirements
 	{
 		Boredom = FMath::Clamp(Boredom + 0.01f * DeltaSeconds, 0.f, 1.f);
 		Fatigue = FMath::Clamp(Fatigue + 0.01f * DeltaSeconds, 0.f, 1.f);
-		Hunger  = FMath::Clamp(Hunger  + 0.05f * DeltaSeconds, 0.f, 1.f);
-		Thirst  = FMath::Clamp(Thirst  + 0.1f * DeltaSeconds, 0.f, 1.f);
+		Hunger  = FMath::Clamp(Hunger  + 0.02f * DeltaSeconds, 0.f, 1.f);
+		Thirst  = FMath::Clamp(Thirst  + 0.04f * DeltaSeconds, 0.f, 1.f);
 	}
 };
 
@@ -96,6 +96,11 @@ class UDesireBase
 	bool CanBePerformed() const
 	{
 		return true;
+	}
+
+	bool InhibitsMove() const
+	{
+		return false;
 	}
 
 	FString GetDisplayString() const

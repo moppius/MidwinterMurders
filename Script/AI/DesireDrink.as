@@ -24,6 +24,11 @@ class UDesireDrink : UDesireBase
 		return IsOverlappingDrinkArea() ? "Drinking" : "Wants to drink";
 	}
 
+	bool InhibitsMove() const override
+	{
+		return IsOverlappingDrinkArea();
+	}
+
 	FVector GetMoveLocation() const override
 	{
 		return AIUtils::GetClosestActor(Controller.GetControlledPawn(), AllDrinkAreas).GetActorLocation();
@@ -34,10 +39,12 @@ class UDesireDrink : UDesireBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
+		Weight = DesireRequirements.Thirst;
+
 		if (IsOverlappingDrinkArea())
 		{
 			DesireRequirements.Boredom -= 0.01f * DeltaSeconds;
-			DesireRequirements.Thirst -= 0.1f * DeltaSeconds;
+			DesireRequirements.Thirst -= 0.2f * DeltaSeconds;
 			if (DesireRequirements.Thirst <= 0.1f)
 			{
 				bIsFinished = true;
