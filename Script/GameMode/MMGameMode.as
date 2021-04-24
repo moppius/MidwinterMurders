@@ -8,7 +8,7 @@ class AMMGameMode : AGameModeBase
 	const TSubclassOf<AMMAIController> DefaultAIControllerClass;
 
 
-	private const int MaxAICharacters = 10;
+	private const int MaxAICharacters = 12;
 	private TArray<AMMAIController> CharacterAIs;
 
 
@@ -60,7 +60,7 @@ class AMMGameMode : AGameModeBase
 		if (InAI.Character.Age > 36.f)
 		{
 			float RandomChance = FMath::FRand();
-			while (RandomChance > 0.4f && ShouldAddMoreCharacters())
+			while (RandomChance > 0.6f && ShouldAddMoreCharacters())
 			{
 				auto NewAI = AddNewCharacter();
 				NewAI.Character.Age = FMath::Clamp(InAI.Character.Age - FMath::RandRange(18, 90), 18.f, 90.f);
