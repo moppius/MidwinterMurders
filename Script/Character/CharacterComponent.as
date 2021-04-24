@@ -1,6 +1,7 @@
 import AI.DesireFactory;
 import AI.Desires;
 import Character.CharacterData;
+import Character.RelationshipComponent;
 
 
 event void FOnDesireChangedSignature(UCharacterComponent CharacterComponent, UDesireBase NewDesire);
@@ -130,6 +131,14 @@ class UCharacterComponent : UActorComponent
 			if (DesireRequirements.FocusActor != nullptr && DesireRequirements.FocusActor.IsA(APawn::StaticClass()))
 			{
 				AllPawns.Remove(Cast<APawn>(DesireRequirements.FocusActor));
+			}
+			for (auto Pawn : AllPawns)
+			{
+				auto RelationshipComponent = URelationshipComponent::Get(Pawn.GetController());
+				if (RelationshipComponent.GetRelationshipStatus(AIController) != ERelationshipStatus::Unrelated)
+				{
+					return Pawn;
+				}
 			}
 			return AllPawns[FMath::RandRange(0, AllPawns.Num() - 1)];
 		}

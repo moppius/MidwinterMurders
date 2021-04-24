@@ -15,11 +15,9 @@ class AMMGameMode : AGameModeBase
 	UFUNCTION(BlueprintOverride)
 	void BeginPlay()
 	{
-		while (CharacterAIs.Num() < MaxAICharacters)
+		while (ShouldAddMoreCharacters())
 		{
-			auto NewAI = Cast<AMMAIController>(SpawnActor(DefaultAIControllerClass.Get()));
-			CharacterAIs.Add(NewAI);
-			AddRelatedAIs(NewAI);
+			AddNewCharacter();
 		}
 
 		for (auto CharacterAI : CharacterAIs)
@@ -27,6 +25,11 @@ class AMMGameMode : AGameModeBase
 			auto Pawn = Cast<APawn>(SpawnActor(DefaultPawnClass, FindSpawnLocation()));
 			CharacterAI.Possess(Pawn);
 		}
+	}
+
+	private bool ShouldAddMoreCharacters() const
+	{
+		return CharacterAIs.Num() < MaxAICharacters;
 	}
 
 	private FVector FindSpawnLocation()
@@ -40,15 +43,39 @@ class AMMGameMode : AGameModeBase
 		return FVector::ZeroVector;
 	}
 
-	void AddRelatedAIs(AMMAIController InAI)
+	private void AddRelatedAIs(AMMAIController InAI)
 	{
-		// Partner
+		// Give this AI a partner
 		if (FMath::FRand() > 0.4f)
 		{
-			AMMAIController NewAI = Cast<AMMAIController>(SpawnActor(DefaultAIControllerClass.Get()));
+			auto NewAI = AddNewCharacter();
 			NewAI.Character.Age = FMath::Clamp(InAI.Character.Age + FMath::RandRange(-15, 15), 18.f, 90.f);
-			NewAI.Character.CharacterName.FamilyName = InAI.Character.CharacterName.FamilyName;
+			if (FMath::FRand() > 0.4f)
+			{
+				NewAI.Character.CharacterName.FamilyName = InAI.Character.CharacterName.FamilyName;
+			}
 			Relationship::MakeRelation(InAI, NewAI, ERelationshipStatus::Partner);
 		}
+		// Give this AI a child
+		if (InAI.Character.Age > 36.f)
+		{
+			float RandomChance = FMath::FRand();
+			while (RandomChance > 0.4f && ShouldAddMoreCharacters())
+			{
+				auto NewAI = AddNewCharacter();
+				NewAI.Character.Age = FMath::Clamp(InAI.Character.Age - FMath::RandRange(18, 90), 18.f, 90.f);
+				NewAI.Character.CharacterName.FamilyName = InAI.Character.CharacterName.FamilyName;
+				Relationship::MakeRelation(InAI, NewAI, ERelationshipStatus::Parent);
+				RandomChance = FMath::FRand();
+			}
+		}
+	}
+
+	private AMMAIController AddNewCharacter()
+	{
+		auto NewAI = Cast<AMMAIController>(SpawnActor(DefaultAIControllerClass.Get()));
+		CharacterAIs.Add(NewAI);
+		AddRelatedAIs(NewAI);
+		return NewAI;
 	}
 };
