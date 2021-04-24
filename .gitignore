@@ -77,6 +77,10 @@
 !VERSION
 !ChangeLog
 
+# Art assets
+!*.fbx
+!*.blend
+
 # Ignore Unix backup files
 *~
 
