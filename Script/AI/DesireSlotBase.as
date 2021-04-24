@@ -1,5 +1,5 @@
+import AI.DesireBase;
 import AI.Utils;
-import AI.Desires;
 import Tags;
 
 

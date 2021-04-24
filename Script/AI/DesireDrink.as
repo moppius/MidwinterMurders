@@ -1,4 +1,4 @@
-import AI.Desires;
+import AI.DesireBase;
 import AI.Utils;
 import Tags;
 

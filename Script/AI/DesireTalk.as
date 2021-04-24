@@ -1,4 +1,4 @@
-import AI.Desires;
+import AI.DesireBase;
 
 
 class UDesireTalk : UDesireBase
