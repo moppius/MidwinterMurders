@@ -1,5 +1,13 @@
 import Character.CharacterData;
-import Character.Desires;
+
+
+struct FPersonality
+{
+	FGameplayTagContainer Likes;
+	FGameplayTagContainer Dislikes;
+
+	float Laziness = 0.5f;
+};
 
 
 class UCharacterComponent : UActorComponent
@@ -13,7 +21,7 @@ class UCharacterComponent : UActorComponent
 	UPROPERTY(EditDefaultsOnly, Category=Character)
 	FCharacterName CharacterName;
 
-	TMap<EDesire, float> Desires;
+	FPersonality Personality;
 
 
 	UFUNCTION(BlueprintOverride)
