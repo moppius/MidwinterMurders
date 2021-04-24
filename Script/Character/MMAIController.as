@@ -1,6 +1,7 @@
 import AI.DesireFactory;
 import Character.RelationshipComponent;
 import Character.CharacterComponent;
+import Components.HealthComponent;
 
 
 UCLASS(Abstract)
@@ -18,6 +19,9 @@ class AMMAIController : AAIController
 	UFUNCTION(BlueprintOverride)
 	void ReceivePossess(APawn PossessedPawn)
 	{
+		auto HealthComponent = UHealthComponent::Get(PossessedPawn);
+		HealthComponent.OnDied.AddUFunction(this, n"Died");
+
 		auto Movement = UCharacterMovementComponent::Get(PossessedPawn);
 		Movement.MaxWalkSpeed *= Character.GetMaxWalkSpeedModifier();
 	}
@@ -40,5 +44,14 @@ class AMMAIController : AAIController
 			System::DrawDebugSphere(GetImmediateMoveDestination(), 50.f, 12, FLinearColor::Blue);
 			System::DrawDebugArrow(GetControlledPawn().GetActorLocation(), GetImmediateMoveDestination(), 10.f, FLinearColor::Blue);
 		}
+	}
+
+	UFUNCTION(NotBlueprintCallable)
+	private void Died(UHealthComponent HealthComponent)
+	{
+		auto Movement = UCharacterMovementComponent::Get(GetControlledPawn());
+		Movement.Deactivate();
+
+		Character.Died();
 	}
 };

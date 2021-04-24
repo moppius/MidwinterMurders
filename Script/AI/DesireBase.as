@@ -47,7 +47,7 @@ class UDesireBase
 
 	FVector GetMoveLocation() const
 	{
-		ensure(false, "GetMoveTarget() not implemented for " + Class.GetName());
+		ensure(false, "GetMoveLocation() not implemented for " + Class.GetName());
 		return FVector::ZeroVector;
 	}
 

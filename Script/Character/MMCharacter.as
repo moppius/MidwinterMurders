@@ -1,11 +1,15 @@
 import Character.CharacterComponent;
 import Character.CharacterWidget;
+import Components.HealthComponent;
 
 
 UCLASS(Abstract)
 class AMMCharacter : ACharacter
 {
 	default AutoPossessAI = EAutoPossessAI::Disabled;
+
+	UPROPERTY(DefaultComponent)
+	UHealthComponent HealthComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category=MidwinterMurdersCharacter)
 	const TSubclassOf<UCharacterInfoWidget> CharacterWidgetClass;

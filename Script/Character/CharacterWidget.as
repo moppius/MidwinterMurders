@@ -1,4 +1,5 @@
 import Character.CharacterComponent;
+import Components.HealthComponent;
 
 
 UCLASS(Abstract)
@@ -18,6 +19,7 @@ class UCharacterInfoWidget : UUserWidget
 	private const float InfoVisibilityDistance = 1500.f;
 
 	private TArray<UDesireBase> ActiveDesires;
+	private bool bHasDied = false;
 
 
 	void Setup(AController InController)
@@ -47,7 +49,18 @@ class UCharacterInfoWidget : UUserWidget
 				true
 			);
 			SetPositionInViewport(ScreenPosition, false);
-			UpdateDesireText();
+
+			auto HealthComponent = UHealthComponent::Get(OwningPawn);
+			if (!HealthComponent.IsDead())
+			{
+				UpdateDesireText();
+			}
+			else if (!bHasDied)
+			{
+				DesireText.SetVisibility(ESlateVisibility::Collapsed);
+				AgeText.SetText(FText::FromString(AgeText.GetText().ToString() + " (DEAD)"));
+				bHasDied = true;
+			}
 		}
 	}
 

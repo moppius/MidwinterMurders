@@ -10,6 +10,7 @@ enum EDesire
 	Drink,
 	Eat,
 	Fight,
+	Murder,
 	Run,
 	Sit,
 	Sleep,

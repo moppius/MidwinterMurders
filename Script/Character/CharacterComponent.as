@@ -2,6 +2,7 @@ import AI.DesireFactory;
 import AI.Desires;
 import Character.CharacterData;
 import Character.RelationshipComponent;
+import Components.HealthComponent;
 
 
 event void FOnDesireAddedSignature(UCharacterComponent CharacterComponent, UDesireBase NewDesire);
@@ -27,8 +28,8 @@ class UCharacterComponent : UActorComponent
 	FOnDesireAddedSignature OnDesireAdded;
 	FOnDesireRemovedSignature OnDesireRemoved;
 
-	FPersonality Personality;
-	FDesireRequirements DesireRequirements;
+	private FPersonality Personality;
+	private FDesireRequirements DesireRequirements;
 
 	private TArray<UDesireBase> Desires;
 
@@ -146,6 +147,16 @@ class UCharacterComponent : UActorComponent
 
 	private EDesire GetNewDesire(const TArray<EDesire>& ActiveDesires)
 	{
+		/*
+		if (DesireRequirements.Anger >= 0.8f && !ActiveDesires.Contains(EDesire::Fight))
+		{
+			return EDesire::Fight;
+		}
+		*/
+		if (DesireRequirements.Anger >= 1.f && !ActiveDesires.Contains(EDesire::Murder))
+		{
+			return EDesire::Murder;
+		}
 		if (DesireRequirements.Fatigue >= 1.f && !ActiveDesires.Contains(EDesire::Sleep))
 		{
 			return EDesire::Sleep;
@@ -190,8 +201,8 @@ class UCharacterComponent : UActorComponent
 			}
 			for (auto Pawn : AllPawns)
 			{
-				auto RelationshipComponent = URelationshipComponent::Get(Pawn.GetController());
-				if (RelationshipComponent.GetRelationshipStatus(AIController) != ERelationshipStatus::Unrelated)
+				auto HealthComponent = UHealthComponent::Get(Pawn);
+				if (!HealthComponent.IsDead())
 				{
 					return Pawn;
 				}
@@ -199,5 +210,11 @@ class UCharacterComponent : UActorComponent
 			return AllPawns[FMath::RandRange(0, AllPawns.Num() - 1)];
 		}
 		return nullptr;
+	}
+
+	void Died()
+	{
+		Desires.Empty();
+		SetComponentTickEnabled(false);
 	}
 };

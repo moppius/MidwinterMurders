@@ -1,6 +1,7 @@
 import AI.Desires;
 import AI.DesireDrink;
 import AI.DesireEat;
+import AI.DesireMurder;
 import AI.DesireSit;
 import AI.DesireSleep;
 import AI.DesireTalk;
@@ -20,8 +21,8 @@ namespace Desire
 			case EDesire::Eat:
 				DesireClass = UDesireEat::StaticClass();
 				break;
-			case EDesire::Walk:
-				DesireClass = UDesireWalk::StaticClass();
+			case EDesire::Murder:
+				DesireClass = UDesireMurder::StaticClass();
 				break;
 			case EDesire::Sit:
 				DesireClass = UDesireSit::StaticClass();
@@ -31,6 +32,9 @@ namespace Desire
 				break;
 			case EDesire::Talk:
 				DesireClass = UDesireTalk::StaticClass();
+				break;
+			case EDesire::Walk:
+				DesireClass = UDesireWalk::StaticClass();
 				break;
 			default:
 				break;
