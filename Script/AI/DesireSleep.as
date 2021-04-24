@@ -3,6 +3,9 @@ import AI.Desires;
 
 class UDesireSleep : UDesireBase
 {
+	default Type = EDesire::Sleep;
+
+
 	private void Tick_Implementation(
 		float DeltaSeconds,
 		FDesireRequirements& DesireRequirements,

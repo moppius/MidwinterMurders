@@ -4,7 +4,8 @@ import Character.CharacterData;
 import Character.RelationshipComponent;
 
 
-event void FOnDesireChangedSignature(UCharacterComponent CharacterComponent, UDesireBase NewDesire);
+event void FOnDesireAddedSignature(UCharacterComponent CharacterComponent, UDesireBase NewDesire);
+event void FOnDesireRemovedSignature(UCharacterComponent CharacterComponent, UDesireBase RemovedDesire);
 
 
 class UCharacterComponent : UActorComponent
@@ -23,7 +24,8 @@ class UCharacterComponent : UActorComponent
 	UPROPERTY(EditDefaultsOnly, Category=Character)
 	float Age = 0.f;
 
-	FOnDesireChangedSignature OnDesireChanged;
+	FOnDesireAddedSignature OnDesireAdded;
+	FOnDesireRemovedSignature OnDesireRemoved;
 
 	FPersonality Personality;
 	FDesireRequirements DesireRequirements;
@@ -48,6 +50,7 @@ class UCharacterComponent : UActorComponent
 		CharacterNameDataAsset.GenerateCharacterName(Gender, CharacterName);
 
 		Personality = FPersonality(Age);
+		DesireRequirements = FDesireRequirements(Age);
 	}
 
 	UFUNCTION(BlueprintOverride)
@@ -58,6 +61,7 @@ class UCharacterComponent : UActorComponent
 			return;
 		}
 
+		TArray<EDesire> ActiveDesires;
 		for (int i = Desires.Num(); i > 0; i--)
 		{
 			const int Index = i - 1;
@@ -65,13 +69,16 @@ class UCharacterComponent : UActorComponent
 			Desire.Tick(DeltaSeconds, DesireRequirements, Personality);
 			if (Desire.IsFinished())
 			{
+				OnDesireRemoved.Broadcast(this, Desire);
 				Desires.RemoveAt(Index);
 			}
+			else
+			{
+				ActiveDesires.AddUnique(Desire.GetType());
+			}
 		}
-		if (Desires.Num() == 0)
-		{
-			AddNewDesire();
-		}
+
+		UpdateDesires(ActiveDesires);
 
 		DesireRequirements.Tick(DeltaSeconds);
 	}
@@ -95,31 +102,56 @@ class UCharacterComponent : UActorComponent
 		}
 	}
 
-	private void AddNewDesire()
+	private void UpdateDesires(TArray<EDesire>& ActiveDesires)
 	{
-		const auto Desire = UpdateDesire();
-		auto DesireObject = Desire::Create(Desire);
-		DesireObject.BeginPlay(AIController, DesireRequirements);
-		Desires.Add(DesireObject);
-		OnDesireChanged.Broadcast(this, DesireObject);
+		auto Desire = GetNewDesire(ActiveDesires);
+		while (Desire != EDesire::None)
+		{
+			auto DesireObject = Desire::Create(Desire);
+			DesireObject.BeginPlay(AIController, DesireRequirements);
+			ActiveDesires.AddUnique(Desire);
+			Desires.Add(DesireObject);
+			if (!DesireObject.IsFinished() && AIController.GetMoveStatus() == EPathFollowingStatus::Idle)
+			{
+				AIController.MoveToLocation(DesireObject.GetMoveLocation());
+			}
+			OnDesireAdded.Broadcast(this, DesireObject);
+			Desire = GetNewDesire(ActiveDesires);
+		}
 	}
 
-	private EDesire UpdateDesire()
+	private EDesire GetNewDesire(const TArray<EDesire>& ActiveDesires)
 	{
-		if (DesireRequirements.Fatigue >= 1.f)
+		if (DesireRequirements.Fatigue >= 1.f && !ActiveDesires.Contains(EDesire::Sleep))
 		{
 			return EDesire::Sleep;
 		}
-		else if (DesireRequirements.Fatigue >= Personality.Laziness)
+		if (DesireRequirements.Thirst >= 0.9f && !ActiveDesires.Contains(EDesire::Drink))
+		{
+			return EDesire::Drink;
+		}
+		if (DesireRequirements.Hunger >= 0.9f && !ActiveDesires.Contains(EDesire::Eat))
+		{
+			return EDesire::Eat;
+		}
+		if (DesireRequirements.Fatigue >= Personality.Laziness
+			&& !ActiveDesires.Contains(EDesire::Sit) && !ActiveDesires.Contains(EDesire::Walk))
 		{
 			return EDesire::Sit;
 		}
+		if (DesireRequirements.Fatigue <= 0.1f
+			&& !ActiveDesires.Contains(EDesire::Walk) && !ActiveDesires.Contains(EDesire::Sit))
+		{
+			return EDesire::Walk;
+		}
+
 		if (DesireRequirements.Boredom >= 0.5f)
 		{
-			DesireRequirements.Boredom = 0.f;
 			DesireRequirements.FocusActor = GetNewFocusActor();
+			DesireRequirements.Boredom = 0.f;
 		}
-		return EDesire::Walk;
+
+		return Desires.Num() > 0 ? EDesire::None : EDesire::Walk;
 	}
 
 	private AActor GetNewFocusActor() const

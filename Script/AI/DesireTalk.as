@@ -3,15 +3,21 @@ import AI.Desires;
 
 class UDesireTalk : UDesireBase
 {
-	AActor TargetActor;
+	default Type = EDesire::Talk;
 
-	FText GetDisplayText() const override
+
+	private AActor TargetActor;
+	private const float TalkingDistance = 250.f;
+
+	bool CanBePerformed() const override
 	{
-		if (System::IsValid(TargetActor))
-		{
-			return FText::FromString("Talking to " + TargetActor.GetName());
-		}
-		return FText::FromString("Talking to themself");
+		return Controller.GetControlledPawn().GetDistanceTo(TargetActor) <= TalkingDistance;
+	}
+
+	FString GetDisplayString() const override
+	{
+		FString String = CanBePerformed() ? "Talking to " : "Wants to talk to ";
+		return String + (System::IsValid(TargetActor) ? "" + TargetActor.GetName() : "nobody");
 	}
 
 	private void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override

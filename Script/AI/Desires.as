@@ -1,13 +1,14 @@
 enum EDesire
 {
-	Eat,
+	None,
 	Drink,
-	Talk,
-	Sleep,
-	Run,
+	Eat,
 	Fight,
-	Walk,
+	Run,
 	Sit,
+	Sleep,
+	Talk,
+	Walk,
 };
 
 
@@ -45,12 +46,20 @@ struct FDesireRequirements
 	AActor FocusActor;
 
 
+	FDesireRequirements(float Age)
+	{
+		Boredom = FMath::RandRange(0.f, 1.f);
+		Fatigue = FMath::RandRange(0.f, 1.f);
+		Hunger = FMath::RandRange(0.f, 1.f);
+		Thirst = FMath::RandRange(0.f, 1.f);
+	}
+
 	void Tick(float DeltaSeconds)
 	{
 		Boredom = FMath::Clamp(Boredom + 0.01f * DeltaSeconds, 0.f, 1.f);
 		Fatigue = FMath::Clamp(Fatigue + 0.01f * DeltaSeconds, 0.f, 1.f);
-		Hunger  = FMath::Clamp(Hunger  + 0.01f * DeltaSeconds, 0.f, 1.f);
-		Thirst  = FMath::Clamp(Thirst  + 0.01f * DeltaSeconds, 0.f, 1.f);
+		Hunger  = FMath::Clamp(Hunger  + 0.05f * DeltaSeconds, 0.f, 1.f);
+		Thirst  = FMath::Clamp(Thirst  + 0.1f * DeltaSeconds, 0.f, 1.f);
 	}
 };
 
@@ -58,16 +67,18 @@ struct FDesireRequirements
 UCLASS(Abstract)
 class UDesireBase
 {
-	protected EDesire Type;
+	protected EDesire Type = EDesire::None;
 	protected float Weight = 0.f;
 	protected float TimeActive = 0.f;
 	protected AAIController Controller;
 	protected bool bIsFinished = false;
 
+
 	void BeginPlay(AAIController InController, FDesireRequirements& DesireRequirements) final
 	{
 		Controller = InController;
 		BeginPlay_Implementation(DesireRequirements);
+		ensure(Type != EDesire::None, "You must specify a desire type for " + Class.GetName() + "!");
 	}
 
 	void Tick(
@@ -75,16 +86,27 @@ class UDesireBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality)
 	{
-		if (!bIsFinished)
+		if (CanBePerformed() && !bIsFinished)
 		{
 			TimeActive += DeltaSeconds;
 			Tick_Implementation(DeltaSeconds, DesireRequirements, Personality);
 		}
 	}
 
-	FText GetDisplayText() const
+	bool CanBePerformed() const
 	{
-		return FText::FromString("GetDisplayText() not implemented for " + Class.GetName());
+		return true;
+	}
+
+	FString GetDisplayString() const
+	{
+		return "GetDisplayString() not implemented for " + Class.GetName();
+	}
+
+	FVector GetMoveLocation() const
+	{
+		ensure(false, "GetMoveTarget() not implemented for " + Class.GetName());
+		return FVector::ZeroVector;
 	}
 
 	float GetDesireModifier(EDesire OtherDesire) const
@@ -97,7 +119,7 @@ class UDesireBase
 		return bIsFinished;
 	}
 
-	float GetType() const final
+	EDesire GetType() const final
 	{
 		return Type;
 	}

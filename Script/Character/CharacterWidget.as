@@ -17,13 +17,16 @@ class UCharacterInfoWidget : UUserWidget
 	private const FVector CharacterInfoWidgetOffset = FVector(0.f, 0.f, 150.f);
 	private const float InfoVisibilityDistance = 1500.f;
 
+	private TArray<UDesireBase> ActiveDesires;
+
 
 	void Setup(AController InController)
 	{
 		auto CharacterInfo = UCharacterComponent::Get(InController);
 		NameText.SetText(FText::FromString(CharacterInfo.CharacterName.GetFullName()));
 		AgeText.SetText(FText::FromString("Age " + FMath::TruncToInt(CharacterInfo.Age)));
-		CharacterInfo.OnDesireChanged.AddUFunction(this, n"DesireChanged");
+		CharacterInfo.OnDesireAdded.AddUFunction(this, n"DesireAdded");
+		CharacterInfo.OnDesireRemoved.AddUFunction(this, n"DesireRemoved");
 	}
 
 	void UpdateWidget(APawn OwningPawn)
@@ -48,8 +51,26 @@ class UCharacterInfoWidget : UUserWidget
 	}
 
 	UFUNCTION(NotBlueprintCallable)
-	private void DesireChanged(UCharacterComponent CharacterComponent, UDesireBase NewDesire)
+	private void DesireAdded(UCharacterComponent CharacterComponent, UDesireBase NewDesire)
 	{
-		DesireText.SetText(NewDesire.GetDisplayText());
+		ActiveDesires.Add(NewDesire);
+		UpdateDesireText();
+	}
+
+	UFUNCTION(NotBlueprintCallable)
+	private void DesireRemoved(UCharacterComponent CharacterComponent, UDesireBase RemovedDesire)
+	{
+		ActiveDesires.Remove(RemovedDesire);
+		UpdateDesireText();
+	}
+
+	private void UpdateDesireText()
+	{
+		FString DesireString;
+		for (auto Desire : ActiveDesires)
+		{
+			DesireString += Desire.GetDisplayString() + ",\n";
+		}
+		DesireText.SetText(FText::FromString(DesireString));
 	}
 };

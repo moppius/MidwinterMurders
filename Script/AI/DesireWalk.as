@@ -3,11 +3,15 @@ import AI.Desires;
 
 class UDesireWalk : UDesireBase
 {
+	default Type = EDesire::Walk;
+
+
 	private FVector Target;
 
-	FText GetDisplayText() const override
+
+	FString GetDisplayString() const override
 	{
-		return FText::FromString("Walking");
+		return "Walking";
 	}
 
 	private void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
@@ -23,15 +27,16 @@ class UDesireWalk : UDesireBase
 			Target,
 			FMath::RandRange(500.f, 1500.f)
 		);
-		if (bFoundTarget)
+		if (!bFoundTarget)
 		{
-			Controller.MoveToLocation(Target);
-			return;
+			Warning("Failed to find path to walk location!");
+			bIsFinished = true;
 		}
+	}
 
-		Warning("Failed to find path to walk location!");
-
-		bIsFinished = true;
+	FVector GetMoveLocation() const override
+	{
+		return Target;
 	}
 
 	private void Tick_Implementation(

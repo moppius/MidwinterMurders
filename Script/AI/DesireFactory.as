@@ -1,4 +1,6 @@
 import AI.Desires;
+import AI.DesireDrink;
+import AI.DesireEat;
 import AI.DesireSit;
 import AI.DesireSleep;
 import AI.DesireTalk;
@@ -12,6 +14,12 @@ namespace Desire
 		UClass DesireClass;
 		switch (Type)
 		{
+			case EDesire::Drink:
+				DesireClass = UDesireDrink::StaticClass();
+				break;
+			case EDesire::Eat:
+				DesireClass = UDesireEat::StaticClass();
+				break;
 			case EDesire::Walk:
 				DesireClass = UDesireWalk::StaticClass();
 				break;
