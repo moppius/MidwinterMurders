@@ -1,11 +1,11 @@
 {
 	"folders": [
-		{
-            "path": "Config"
-        },
         {
 			"path": "Script"
-		}
+		},
+        {
+            "path": "Config"
+        }
 	],
 	"settings": {
 		"files.associations": {
