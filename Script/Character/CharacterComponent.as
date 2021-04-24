@@ -52,6 +52,11 @@ class UCharacterComponent : UActorComponent
 	UFUNCTION(BlueprintOverride)
 	void Tick(float DeltaSeconds)
 	{
+		if (AIController.GetControlledPawn() == nullptr)
+		{
+			return;
+		}
+
 		for (int i = Desires.Num(); i > 0; i--)
 		{
 			const int Index = i - 1;

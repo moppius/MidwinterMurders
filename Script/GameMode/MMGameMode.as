@@ -8,16 +8,18 @@ class AMMGameMode : AGameModeBase
 	const TSubclassOf<AMMAIController> DefaultAIControllerClass;
 
 
-	private const int NumAICharacters = 10;
+	private const int MaxAICharacters = 10;
 	private TArray<AMMAIController> CharacterAIs;
 
 
 	UFUNCTION(BlueprintOverride)
 	void BeginPlay()
 	{
-		for (int i = 0; i < NumAICharacters; i++)
+		while (CharacterAIs.Num() < MaxAICharacters)
 		{
-			CharacterAIs.Add(Cast<AMMAIController>(SpawnActor(DefaultAIControllerClass.Get())));
+			auto NewAI = Cast<AMMAIController>(SpawnActor(DefaultAIControllerClass.Get()));
+			CharacterAIs.Add(NewAI);
+			AddRelatedAIs(NewAI);
 		}
 
 		for (auto CharacterAI : CharacterAIs)
@@ -36,5 +38,17 @@ class AMMGameMode : AGameModeBase
 			return SpawnPoints[SpawnIndex].GetActorLocation();
 		}
 		return FVector::ZeroVector;
+	}
+
+	void AddRelatedAIs(AMMAIController InAI)
+	{
+		// Partner
+		if (FMath::FRand() > 0.4f)
+		{
+			AMMAIController NewAI = Cast<AMMAIController>(SpawnActor(DefaultAIControllerClass.Get()));
+			NewAI.Character.Age = FMath::Clamp(InAI.Character.Age + FMath::RandRange(-15, 15), 18.f, 90.f);
+			NewAI.Character.CharacterName.FamilyName = InAI.Character.CharacterName.FamilyName;
+			Relationship::MakeRelation(InAI, NewAI, ERelationshipStatus::Partner);
+		}
 	}
 };
