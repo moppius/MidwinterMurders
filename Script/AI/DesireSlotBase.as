@@ -7,7 +7,7 @@ UCLASS(Abstract)
 class UDesireSlotBase : UDesireBase
 {
 	protected FName Tag = NAME_None;
-	protected float AcceptanceRadius = 50.f;
+	protected float AcceptanceRadius = 80.f;
 
 	private TArray<AActor> AllSlotActors;
 	private AActor ClosestAvailableSlotActor = nullptr;
