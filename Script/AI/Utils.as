@@ -28,7 +28,7 @@ namespace AIUtils
 			auto SlotComponent = UActorSlotComponent::Get(OtherActor);
 			if (ensure(SlotComponent != nullptr, "No Slot Component found on " + OtherActor.GetName()))
 			{
-				if (!SlotComponent.HasAvailableSlot())
+				if (SlotComponent.NumAvailableSlots() == 0)
 				{
 					continue;
 				}
