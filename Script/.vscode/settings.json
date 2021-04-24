@@ -1,0 +1,17 @@
+{
+  "files.associations": {
+    "*.as": "angelscript"
+  },
+  "[angelscript]": {
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false
+  },
+  "perforce.activationMode": "always",
+  "perforce.editOnFileSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "editor.formatOnSave": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true
+}
