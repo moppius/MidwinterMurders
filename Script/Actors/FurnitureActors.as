@@ -5,8 +5,6 @@ import Tags;
 UCLASS(Abstract)
 class AFurnitureActor : AActor
 {
-	default Tags.Add(Tags::Bed);
-
 	UPROPERTY(DefaultComponent, RootComponent)
 	UStaticMeshComponent StaticMeshComponent;
 	default StaticMeshComponent.bCanEverAffectNavigation = true;
