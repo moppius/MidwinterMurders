@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "Script"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.as": "angelscript"
+		},
+		"files.exclude": {
+			"Binds.Cache": true,
+			"Binds.Cache.Headers": true
+		}
+	}
+}
