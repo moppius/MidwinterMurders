@@ -35,6 +35,11 @@ class UDesireMurder : UDesireBase
 			{
 				Gameplay::ApplyDamage(FocusActor, 50.f, Controller, Controller.GetControlledPawn(), UDamageType::StaticClass());
 			}
+
+			if (bIsSatisfied)
+			{
+				DesireRequirements.Modify(Desires::Anger, -0.5f);
+			}
 		}
 	}
 
@@ -58,6 +63,7 @@ class UDesireMurder : UDesireBase
 		if (HealthComponent == nullptr || HealthComponent.IsDead())
 		{
 			bIsSatisfied = true;
+			FocusActor = nullptr;
 		}
 	}
 };
