@@ -52,11 +52,18 @@ class UTimeOfDayManagerComponent : UActorComponent
 
 namespace TimeOfDay
 {
-	FText GetTimeText(float TimeOfDay)
+	FText GetTimeText(float TimeOfDay, bool bTwentyFourHourClock = true)
 	{
 		const FTimespan TS = FTimespan::FromDays(TimeOfDay);
 		FString Hour = (TS.GetHours() < 10 ? "0" : "") + TS.GetHours();
 		FString Minute = (TS.GetMinutes() < 10 ? "0" : "") + TS.GetMinutes();
-		return FText::FromString(Hour + ":" + Minute);
+		if (bTwentyFourHourClock)
+		{
+			return FText::FromString(Hour + ":" + Minute);
+		}
+
+		const FString Suffix = TS.GetHours() < 12.f ? "AM" : "PM";
+		Hour = "" + TS.GetHours() % 12;
+		return FText::FromString(Hour + ":" + Minute + " " + Suffix);
 	}
 }

@@ -19,6 +19,6 @@ class UTimeOfDayWidget : UUserWidget
 	UFUNCTION(BlueprintOverride)
 	void Tick(FGeometry MyGeometry, float InDeltaTime)
 	{
-		TimeText.SetText(TimeOfDay::GetTimeText(TimeOfDayManager.GetTimeOfDay()));
+		TimeText.SetText(TimeOfDay::GetTimeText(TimeOfDayManager.GetTimeOfDay(), false));
 	}
 };
