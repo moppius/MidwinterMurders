@@ -1,4 +1,6 @@
+import HUD.AreaInfoWidget;
 import HUD.HUDNotificationWidget;
+import HUD.TimeOfDayWidget;
 
 
 class AMMHUD : AHUD
@@ -9,8 +11,12 @@ class AMMHUD : AHUD
 	private UMMHUDWidget HUDWidget;
 
 
-	UFUNCTION(BlueprintOverride)
-	void BeginPlay()
+	void AddNotification(FString InNotification, float InDuration)
+	{
+		HUDWidget.NotificationWidget.AddNotification(InNotification, InDuration);
+	}
+
+	void ReceivePossess(APawn PossessedPawn)
 	{
 		if (ensure(HUDWidgetClass.IsValid()))
 		{
@@ -20,11 +26,8 @@ class AMMHUD : AHUD
 			HUDWidget.AddToPlayerScreen();
 			HUDWidget.NotificationWidget.AddNotification("You are in the village of Midwinter.", 3.f);
 		}
-	}
 
-	void AddNotification(FString InNotification, float InDuration)
-	{
-		HUDWidget.NotificationWidget.AddNotification(InNotification, InDuration);
+		HUDWidget.AreaInfoWidget.BindToPawn(PossessedPawn);
 	}
 };
 
@@ -33,5 +36,11 @@ UCLASS(Abstract)
 class UMMHUDWidget : UUserWidget
 {
 	UPROPERTY(NotEditable, Instanced, Meta = (BindWidget))
+	UTimeOfDayWidget TimeOfDayWidget;
+
+	UPROPERTY(NotEditable, Instanced, Meta = (BindWidget))
 	UHUDNotificationWidget NotificationWidget;
+
+	UPROPERTY(NotEditable, Instanced, Meta = (BindWidget))
+	UAreaInfoWidget AreaInfoWidget;
 };

@@ -23,6 +23,7 @@ class AMMPlayerController : APlayerController
 		HealthComponent.OnDied.AddUFunction(this, n"Died");
 
 		MMHUD = Cast<AMMHUD>(GetHUD());
+		MMHUD.ReceivePossess(PossessedPawn);
 	}
 
 	UFUNCTION(NotBlueprintCallable)
