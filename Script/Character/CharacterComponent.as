@@ -72,7 +72,11 @@ class UCharacterComponent : UActorComponent
 			if (Desire.IsFinished())
 			{
 				OnDesireRemoved.Broadcast(this, Desire);
-				Desires.RemoveAt(Index);
+				// HACK: Desires array is somehow empty here at some point. Race condition with dying?
+				if (Index < Desires.Num())
+				{
+					Desires.RemoveAt(Index);
+				}
 			}
 			else
 			{
