@@ -57,10 +57,25 @@ class UAreaInfoWidget : UUserWidget
 				if (AreaSizeSquared < SmallestAreaSizeSquared)
 				{
 					SmallestAreaSizeSquared = AreaSizeSquared;
-					AreaName = AreaInfo.AreaName;
+					AreaName = GetDisplayString(AreaInfo);
 				}
 			}
 		}
 		AreaInfoText.SetText(FText::FromString(AreaName));
+	}
+
+	private FString GetDisplayString(UAreaInfoComponent AreaInfo) const
+	{
+		FString AreaName = AreaInfo.AreaName;
+		const int NumMurders = AreaInfo.GetNumMurdered();
+		if (NumMurders == 1)
+		{
+			AreaName += " (1 murder)";
+		}
+		else if (NumMurders > 1)
+		{
+			AreaName += " (" + NumMurders + " murders)";
+		}
+		return AreaName;
 	}
 };

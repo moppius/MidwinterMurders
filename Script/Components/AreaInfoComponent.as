@@ -27,6 +27,11 @@ class UAreaInfoComponent : UActorComponent
 		Owner.OnActorEndOverlap.AddUFunction(this, n"EndOverlap");
 	}
 
+	int GetNumMurdered() const
+	{
+		return MurderedPawns.Num();
+	}
+
 	UFUNCTION(NotBlueprintCallable)
 	private void BeginOverlap(AActor OverlappedActor, AActor OtherActor)
 	{
