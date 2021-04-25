@@ -11,11 +11,23 @@ struct FRelationship
 {
 	AAIController Relation;
 	ERelationshipStatus Status;
+	private float Friendship = 0.f;
 
 	FRelationship(AAIController InRelation, ERelationshipStatus InStatus)
 	{
 		Relation = InRelation;
 		Status = InStatus;
+		Friendship = FMath::RandRange(-1.f, 1.f);
+	}
+
+	float GetFriendship() const
+	{
+		return Friendship;
+	}
+
+	FString GetDebugString() const
+	{
+		return "" + Relation.GetName() + " is " + Status + ", with friendship " + Friendship;
 	}
 };
 
@@ -29,22 +41,30 @@ class URelationshipComponent : UActorComponent
 
 	void SetRelationshipStatus(AAIController OtherAI, ERelationshipStatus Status)
 	{
-		if (ensure(GetRelationshipStatus(OtherAI) == ERelationshipStatus::Unrelated))
-		{
-			Relationships.Add(FRelationship(OtherAI, Status));
-		}
+		Relationships.Add(FRelationship(OtherAI, Status));
 	}
 
-	ERelationshipStatus GetRelationshipStatus(AAIController OtherAI) const
+	bool GetRelationshipStatus(AAIController OtherAI, ERelationshipStatus& OutStatus) const
 	{
 		for (const auto& Relationship : Relationships)
 		{
 			if (Relationship.Relation == OtherAI)
 			{
-				return Relationship.Status;
+				OutStatus = Relationship.Status;
+				return true;
 			}
 		}
-		return ERelationshipStatus::Unrelated;
+		return false;
+	}
+
+	void Print() const
+	{
+		FString String;
+		for (const auto& Relationship : Relationships)
+		{
+			String += Relationship.GetDebugString() + "\n";
+		}
+		Log(String);
 	}
 };
 
@@ -54,15 +74,16 @@ namespace Relationship
 	void MakeRelation(AAIController FirstAI, AAIController SecondAI, ERelationshipStatus RelationshipStatus)
 	{
 		auto SecondRelation = URelationshipComponent::Get(SecondAI);
-		if (SecondRelation.GetRelationshipStatus(FirstAI) == ERelationshipStatus::Unrelated)
+		ERelationshipStatus ExistingStatus;
+		if (!SecondRelation.GetRelationshipStatus(FirstAI, ExistingStatus))
 		{
 			SecondRelation.SetRelationshipStatus(FirstAI, RelationshipStatus);
 		}
 
 		auto FirstRelation = URelationshipComponent::Get(FirstAI);
-		if (FirstRelation.GetRelationshipStatus(SecondAI) == ERelationshipStatus::Unrelated)
+		if (FirstRelation.GetRelationshipStatus(SecondAI, ExistingStatus))
 		{
-			ERelationshipStatus InverseRelationshipStatus = ERelationshipStatus::Partner;
+			ERelationshipStatus InverseRelationshipStatus = RelationshipStatus;
 			if (RelationshipStatus == ERelationshipStatus::Parent)
 			{
 				InverseRelationshipStatus = ERelationshipStatus::Child;
@@ -72,6 +93,16 @@ namespace Relationship
 				InverseRelationshipStatus = ERelationshipStatus::Parent;
 			}
 			FirstRelation.SetRelationshipStatus(SecondAI, InverseRelationshipStatus);
+		}
+	}
+
+	void MakeRandomRelation(AAIController FirstAI, AAIController SecondAI)
+	{
+		auto SecondRelation = URelationshipComponent::Get(SecondAI);
+		ERelationshipStatus ExistingStatus;
+		if (!SecondRelation.GetRelationshipStatus(FirstAI, ExistingStatus))
+		{
+			MakeRelation(FirstAI, SecondAI, ERelationshipStatus::Unrelated);
 		}
 	}
 }

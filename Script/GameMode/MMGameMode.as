@@ -28,8 +28,20 @@ class AMMGameMode : AGameModeBase
 
 		for (auto CharacterAI : CharacterAIs)
 		{
+			for (auto OtherAI : CharacterAIs)
+			{
+				if (CharacterAI != OtherAI)
+				{
+					Relationship::MakeRandomRelation(CharacterAI, OtherAI);
+				}
+			};
 			auto Pawn = Cast<APawn>(SpawnActor(DefaultPawnClass, FindSpawnLocation()));
 			CharacterAI.Possess(Pawn);
+		}
+
+		for (auto CharacterAI : CharacterAIs)
+		{
+			CharacterAI.Relationship.Print();
 		}
 	}
 
