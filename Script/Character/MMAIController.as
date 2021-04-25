@@ -24,7 +24,7 @@ class AMMAIController : AAIController
 
 	UPROPERTY(DefaultComponent)
 	UPawnSensingComponent PawnSensing;
-	default PawnSensing.PeripheralVisionAngle = 40.f;
+	default PawnSensing.PeripheralVisionAngle = 45.f;
 
 
 	UFUNCTION(BlueprintOverride)
@@ -78,6 +78,7 @@ class AMMAIController : AAIController
 	UFUNCTION(NotBlueprintCallable)
 	private void SeePawn(APawn Pawn)
 	{
+		Character.SeePawn(Pawn);
 		if (Sense::Debug.GetInt() > 0)
 		{
 			const FVector Start = GetControlledPawn().GetActorLocation();
