@@ -14,7 +14,7 @@ class UDesireSlotBase : UDesireBase
 	private UActorSlotComponent OccupiedSlot = nullptr;
 
 
-	void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
+	protected void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
 	{
 		AllSlotActors.Empty();
 		TArray<AActor> AllTaggedActors;

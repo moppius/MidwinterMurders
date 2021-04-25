@@ -10,7 +10,7 @@ class UDesireEat : UDesireBase
 	private TArray<AActor> AllFoodAreas;
 
 
-	void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
+	protected void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
 	{
 		Gameplay::GetAllActorsOfClassWithTag(ATriggerVolume::StaticClass(), Tags::Food, AllFoodAreas);
 		ensure(AllFoodAreas.Num() > 0, "No areas tagged as Food!");

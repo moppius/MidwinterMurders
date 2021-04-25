@@ -10,7 +10,7 @@ class UDesireDrink : UDesireBase
 	private TArray<AActor> AllDrinkAreas;
 
 
-	void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
+	protected void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
 	{
 		Gameplay::GetAllActorsOfClassWithTag(ATriggerVolume::StaticClass(), Tags::Drink, AllDrinkAreas);
 		ensure(AllDrinkAreas.Num() > 0, "No areas tagged as Drink!");

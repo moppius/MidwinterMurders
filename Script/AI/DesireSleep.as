@@ -1,5 +1,6 @@
 import AI.DesireSlotBase;
 import AI.Utils;
+import Components.TimeOfDayManager;
 import Tags;
 
 
@@ -8,10 +9,18 @@ class UDesireSleep : UDesireSlotBase
 	default Type = EDesire::Sleep;
 	default Tag = Tags::Bed;
 
+	private UTimeOfDayManagerComponent TimeOfDayManager;
+
+
+	protected void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
+	{
+		TimeOfDayManager = UTimeOfDayManagerComponent::Get(Gameplay::GetGameMode());
+		Super::BeginPlay_Implementation(DesireRequirements);
+	}
 
 	FString GetDisplayString() const override
 	{
-		return WithinRangeOfSlotActor() ? "Sleeping" : "Wants to sleep";
+		return (bIsActive && WithinRangeOfSlotActor()) ? "Sleeping" : "Wants to sleep";
 	}
 
 	protected void Tick_Implementation(
@@ -19,13 +28,14 @@ class UDesireSleep : UDesireSlotBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
+		const float SleepyTime = FMath::Abs(TimeOfDayManager.GetTimeOfDay() - 0.5f) * 2.f - 0.5f;
+		Weight = FMath::Clamp(DesireRequirements.GetValue(Desires::Fatigue) + SleepyTime, 0.f, 1.f);
+
 		Super::Tick_Implementation(DeltaSeconds, DesireRequirements, Personality);
 		if (!bIsActive)
 		{
 			return;
 		}
-
-		Weight = DesireRequirements.GetValue(Desires::Fatigue);
 
 		if (IsOccupyingSlot())
 		{

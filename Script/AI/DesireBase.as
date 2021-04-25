@@ -93,7 +93,7 @@ class UDesireBase
 		return FocusActor;
 	}
 
-	private void BeginPlay_Implementation(FDesireRequirements& DesireRequirements)
+	protected void BeginPlay_Implementation(FDesireRequirements& DesireRequirements)
 	{
 	}
 

@@ -10,13 +10,8 @@ class UDesireTalk : UDesireBase
 
 	FString GetDisplayString() const override
 	{
-		FString String = "Talking to ";// CanBePerformed() ? "Talking to " : "Wants to talk to ";
+		FString String = bIsActive ? "Talking to " : "Wants to talk to ";
 		return String + (System::IsValid(FocusActor) ? "" + FocusActor.GetName() : "nobody");
-	}
-
-	private void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
-	{
-		DesireRequirements.Modify(Desires::Boredom, -0.5f);
 	}
 
 	protected void Tick_Implementation(
@@ -24,6 +19,9 @@ class UDesireTalk : UDesireBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
-		DesireRequirements.Modify(Desires::Boredom, 0.01f * DeltaSeconds);
+		if (bIsActive)
+		{
+			DesireRequirements.Modify(Desires::Boredom, 0.01f * DeltaSeconds);
+		}
 	}
 };
