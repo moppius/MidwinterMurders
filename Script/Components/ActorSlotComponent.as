@@ -52,6 +52,8 @@ struct FActorSlot
 
 class UActorSlotComponent : UActorComponent
 {
+	default PrimaryComponentTick.bStartWithTickEnabled = false;
+
 	private TArray<FActorSlot> Slots;
 	private UStaticMeshComponent StaticMeshComponent;
 

@@ -22,6 +22,8 @@ struct FRelationship
 
 class URelationshipComponent : UActorComponent
 {
+	default PrimaryComponentTick.bStartWithTickEnabled = false;
+
 	private TArray<FRelationship> Relationships;
 
 

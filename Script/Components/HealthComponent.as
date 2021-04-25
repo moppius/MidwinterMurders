@@ -3,6 +3,8 @@ event void FOnDiedSignature(UHealthComponent HealthComponent);
 
 class UHealthComponent : UActorComponent
 {
+	default PrimaryComponentTick.bStartWithTickEnabled = false;
+
 	private float MaxHealth = 100.f;
 	private float CurrentHealth = 100.f;
 
