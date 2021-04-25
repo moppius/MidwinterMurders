@@ -214,7 +214,7 @@ class UCharacterComponent : UActorComponent
 
 	void Died()
 	{
-		Desires.Empty();
 		SetComponentTickEnabled(false);
+		Desires.Empty();
 	}
 };
