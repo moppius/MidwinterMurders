@@ -1,24 +1,17 @@
-import AI.DesireBase;
+import AI.DesireAreaBase;
 import AI.Utils;
 import Tags;
 
 
-class UDesireEat : UDesireBase
+class UDesireEat : UDesireAreaBase
 {
 	default Type = EDesire::Eat;
+	default AreaTag = Tags::Food;
 
-	private TArray<AActor> AllFoodAreas;
-
-
-	protected void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
-	{
-		Gameplay::GetAllActorsOfClassWithTag(ATriggerVolume::StaticClass(), Tags::Food, AllFoodAreas);
-		ensure(AllFoodAreas.Num() > 0, "No areas tagged as Food!");
-	}
 
 	FString GetDisplayString() const override
 	{
-		return (bIsActive && IsOverlappingFoodArea()) ? "Eating" : "Wants to eat";
+		return (bIsActive && IsOverlappingArea()) ? "Eating" : "Wants to eat";
 	}
 
 	protected void Tick_Implementation(
@@ -28,7 +21,7 @@ class UDesireEat : UDesireBase
 	{
 		Weight = DesireRequirements.GetValue(Desires::Hunger);
 
-		if (bIsActive && IsOverlappingFoodArea())
+		if (bIsActive && IsOverlappingArea())
 		{
 			DesireRequirements.Modify(Desires::Boredom, -0.01f * DeltaSeconds);
 			DesireRequirements.Modify(Desires::Hunger, -0.1f * DeltaSeconds);
@@ -36,25 +29,7 @@ class UDesireEat : UDesireBase
 
 			bIsSatisfied = DesireRequirements.GetValue(Desires::Hunger) < 0.1f;
 		}
-	}
 
-	bool GetMoveLocation(FVector& OutLocation) const override
-	{
-		OutLocation = AIUtils::GetClosestActor(Controller.GetControlledPawn(), AllFoodAreas).GetActorLocation();
-		return true;
-	}
-
-	private bool IsOverlappingFoodArea() const
-	{
-		TArray<AActor> OverlappingActors;
-		Controller.GetControlledPawn().GetOverlappingActors(OverlappingActors, ATriggerVolume::StaticClass());
-		for (AActor Actor : OverlappingActors)
-		{
-			if (Actor.Tags.Contains(Tags::Food))
-			{
-				return true;
-			}
-		}
-		return false;
+		Super::Tick_Implementation(DeltaSeconds, DesireRequirements, Personality);
 	}
 };

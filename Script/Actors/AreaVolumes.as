@@ -14,8 +14,14 @@ class ASlotAreaVolume : ATriggerVolume
 	void BeginPlay()
 	{
 		SlotActors.Empty();
+		TArray<AActor> ActorsToIgnore;
 		TArray<AActor> OverlappingActors;
-		GetOverlappingActors(OverlappingActors, AActor::StaticClass());
+		TArray<EObjectTypeQuery> ObjectTypes;
+		ObjectTypes.Add(EObjectTypeQuery::WorldStatic);
+		System::BoxOverlapActors(
+			BrushComponent.GetBoundsOrigin(), BrushComponent.GetBoundsExtent(),
+			ObjectTypes, AActor::StaticClass(), ActorsToIgnore, OverlappingActors
+		);
 		for (auto Actor : OverlappingActors)
 		{
 			if (UActorSlotComponent::Get(Actor) != nullptr)
@@ -46,8 +52,9 @@ class ASlotAreaVolume : ATriggerVolume
 		if (ClosestAvailableActor != nullptr)
 		{
 			OutLocation = ClosestAvailableActor.GetActorLocation();
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	int NumAvailableSlots() const
