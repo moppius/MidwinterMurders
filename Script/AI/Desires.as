@@ -53,14 +53,12 @@ namespace Desires
 struct FDesireRequirement
 {
 	FName Name = NAME_None;
-	AActor FocusActor;
 	private float Value = 0.f;
 	private float IncrementRate = 0.f;
 
 	FDesireRequirement(FName InName, float InIncrementRate)
 	{
 		Name = InName;
-		FocusActor = nullptr;
 		Value = FMath::RandRange(0.f, 1.f);
 		IncrementRate = IncrementRate;
 	}
