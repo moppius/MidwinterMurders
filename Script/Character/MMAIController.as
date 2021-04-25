@@ -23,10 +23,7 @@ class AMMAIController : AAIController
 	URelationshipComponent Relationship;
 
 	UPROPERTY(DefaultComponent)
-	UPawnSensingComponent PawnSensing;
-	default PawnSensing.PeripheralVisionAngle = 45.f;
-	default PawnSensing.HearingThreshold = 6000.f;
-	default PawnSensing.bOnlySensePlayers = false;
+	UAIPerceptionComponent Perception;
 
 
 	UFUNCTION(BlueprintOverride)
@@ -38,8 +35,7 @@ class AMMAIController : AAIController
 		auto Movement = UCharacterMovementComponent::Get(PossessedPawn);
 		Movement.MaxWalkSpeed *= Character.GetMaxWalkSpeedModifier();
 
-		PawnSensing.OnHearNoise.AddUFunction(this, n"HearNoise");
-		PawnSensing.OnSeePawn.AddUFunction(this, n"SeePawn");
+		Perception.OnTargetPerceptionUpdated.AddUFunction(this, n"TargetPerceptionUpdated");
 	}
 
 	UFUNCTION(BlueprintOverride)
@@ -69,19 +65,23 @@ class AMMAIController : AAIController
 	UFUNCTION(NotBlueprintCallable)
 	private void Died(UHealthComponent HealthComponent)
 	{
-		PawnSensing.Deactivate();
-		PawnSensing.OnHearNoise.Clear();
-		PawnSensing.OnSeePawn.Clear();
+		Perception.Deactivate();
+		Perception.OnTargetPerceptionUpdated.Clear();
+
 		Character.Died();
 		AMMHUD HUD = Cast<AMMHUD>(Gameplay::GetPlayerController(0).GetHUD());
 		HUD.AddNotification(Character.CharacterName.GetFullName() + " was murdered!", 3.f);
 	}
 
 	UFUNCTION(NotBlueprintCallable)
-	private void HearNoise(APawn InInstigator, FVector& Location, float Volume)
+	private void TargetPerceptionUpdated(AActor Actor, FAIStimulus Stimulus)
 	{
-		Log("" + GetName() + " heard noise!");
-		//Character.InvestigateNoise(InInstigator, Location, Volume);
+		if (Stimulus.Tag == Tags::PainScream)
+		{
+		}
+		else if (Stimulus.Tag == Tags::DeathScream)
+		{
+		}
 	}
 
 	UFUNCTION(NotBlueprintCallable)

@@ -34,12 +34,12 @@ class UHealthComponent : UActorComponent
 			auto PawnOwner = Cast<APawn>(Owner);
 			if (IsDead())
 			{
-				PawnOwner.MakeNoise(1.f, PawnOwner, PawnOwner.GetActorLocation(), 6000.f, Tags::DeathScream);
+				UAISense_Hearing::ReportNoiseEvent(PawnOwner.GetActorLocation(), 1.f, PawnOwner, Tag = Tags::DeathScream);
 				OnDied.Broadcast(this);
 			}
 			else
 			{
-				PawnOwner.MakeNoise(1.f, PawnOwner, PawnOwner.GetActorLocation(), 4000.f, Tags::PainScream);
+				UAISense_Hearing::ReportNoiseEvent(PawnOwner.GetActorLocation(), 0.9f, PawnOwner, Tag = Tags::PainScream);
 			}
 		}
 	}
