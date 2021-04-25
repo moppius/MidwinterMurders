@@ -25,6 +25,31 @@ class ASlotAreaVolume : ATriggerVolume
 		}
 	}
 
+	bool GetClosestAvailableSlot(AActor OtherActor, FVector& OutLocation) const
+	{
+		OutLocation = GetActorLocation();
+		AActor ClosestAvailableActor;
+		float ClosestDistanceSquared = MAX_flt;
+		for (auto Actor : SlotActors)
+		{
+			auto SlotComponent = UActorSlotComponent::Get(Actor);
+			if (SlotComponent.NumAvailableSlots() > 0)
+			{
+				const float DistanceSquared = Actor.GetSquaredDistanceTo(OtherActor);
+				if (DistanceSquared < ClosestDistanceSquared)
+				{
+					ClosestDistanceSquared = DistanceSquared;
+					ClosestAvailableActor = Actor;
+				}
+			}
+		}
+		if (ClosestAvailableActor != nullptr)
+		{
+			OutLocation = ClosestAvailableActor.GetActorLocation();
+		}
+		return true;
+	}
+
 	int NumAvailableSlots() const
 	{
 		int Num = 0;
