@@ -75,7 +75,7 @@ struct FDesireRequirement
 
 	void Tick(float DeltaSeconds)
 	{
-		Value += DeltaSeconds * IncrementRate;
+		Value = FMath::Clamp(Value + DeltaSeconds * IncrementRate, 0.f, 1.f);
 	}
 };
 
