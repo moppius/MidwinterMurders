@@ -7,6 +7,7 @@ class UAreaInfoWidget : UUserWidget
 	UPROPERTY(Instanced, Meta=(BindWidget))
 	private UTextBlock AreaInfoText;
 
+	private UAreaInfoComponent CurrentAreaInfo;
 	private APawn Pawn;
 
 	void BindToPawn(APawn InPawn)
@@ -16,7 +17,7 @@ class UAreaInfoWidget : UUserWidget
 		Pawn.OnActorBeginOverlap.AddUFunction(this, n"PawnBeginOverlap");
 		Pawn.OnActorEndOverlap.AddUFunction(this, n"PawnEndOverlap");
 
-		UpdateAreaText();
+		UpdateCurrentArea();
 	}
 
 	UFUNCTION(NotBlueprintCallable)
@@ -25,7 +26,7 @@ class UAreaInfoWidget : UUserWidget
 		auto AreaInfo = UAreaInfoComponent::Get(OtherActor);
 		if (AreaInfo != nullptr)
 		{
-			UpdateAreaText();
+			UpdateCurrentArea();
 		}
 	}
 
@@ -35,16 +36,17 @@ class UAreaInfoWidget : UUserWidget
 		auto AreaInfo = UAreaInfoComponent::Get(OtherActor);
 		if (AreaInfo != nullptr)
 		{
-			UpdateAreaText();
+			UpdateCurrentArea();
 		}
 	}
 
-	private void UpdateAreaText()
+	private void UpdateCurrentArea()
 	{
 		TArray<AActor> OverlappingAreas;
 		Pawn.GetOverlappingActors(OverlappingAreas, ATriggerVolume::StaticClass());
-		FString AreaName = "Outside";
+
 		float SmallestAreaSizeSquared = MAX_flt;
+		CurrentAreaInfo = nullptr;
 		for (auto Area : OverlappingAreas)
 		{
 			auto AreaInfo = UAreaInfoComponent::Get(Area);
@@ -57,17 +59,24 @@ class UAreaInfoWidget : UUserWidget
 				if (AreaSizeSquared < SmallestAreaSizeSquared)
 				{
 					SmallestAreaSizeSquared = AreaSizeSquared;
-					AreaName = GetDisplayString(AreaInfo);
+					CurrentAreaInfo = AreaInfo;
 				}
 			}
 		}
-		AreaInfoText.SetText(FText::FromString(AreaName));
+
+		UpdateDisplayText();
 	}
 
-	private FString GetDisplayString(UAreaInfoComponent AreaInfo) const
+	private void UpdateDisplayText() const
 	{
-		FString AreaName = AreaInfo.AreaName;
-		const int NumMurders = AreaInfo.GetNumMurdered();
+		if (CurrentAreaInfo == nullptr)
+		{
+			AreaInfoText.SetText(FText::FromString("Unknown Area"));
+			return;
+		}
+
+		FString AreaName = CurrentAreaInfo.AreaName;
+		const int NumMurders = CurrentAreaInfo.GetNumMurdered();
 		if (NumMurders == 1)
 		{
 			AreaName += " (1 murder)";
@@ -76,6 +85,6 @@ class UAreaInfoWidget : UUserWidget
 		{
 			AreaName += " (" + NumMurders + " murders)";
 		}
-		return AreaName;
+		AreaInfoText.SetText(FText::FromString(AreaName));
 	}
 };
