@@ -47,7 +47,7 @@ class AMMAIController : AAIController
 			return;
 		}
 
-		if (GetMoveStatus() == EPathFollowingStatus::Idle)
+		if (GetMoveStatus() != EPathFollowingStatus::Moving)
 		{
 			FVector NewLocation;
 			if (Character.GetMoveLocation(NewLocation))
