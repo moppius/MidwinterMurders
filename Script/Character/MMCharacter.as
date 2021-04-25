@@ -11,9 +11,6 @@ class AMMCharacter : ACharacter
 	UPROPERTY(DefaultComponent)
 	UHealthComponent HealthComponent;
 
-	UPROPERTY(DefaultComponent)
-	UPawnNoiseEmitterComponent NoiseEmitter;
-
 	UPROPERTY(EditDefaultsOnly, Category=MidwinterMurdersCharacter)
 	const TSubclassOf<UCharacterInfoWidget> CharacterWidgetClass;
 
