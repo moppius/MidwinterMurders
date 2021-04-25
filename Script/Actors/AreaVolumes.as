@@ -1,13 +1,13 @@
-import Character.CharacterComponent;
 import Components.ActorSlotComponent;
-import Components.HealthComponent;
+import Components.AreaInfoComponent;
 
 
 class ASlotAreaVolume : ATriggerVolume
 {
+	UPROPERTY(DefaultComponent, ShowOnActor)
+	UAreaInfoComponent AreaInfo;
+
 	private TArray<AActor> SlotActors;
-	private TArray<APawn> ContainedPawns;
-	private TArray<UCharacterComponent> MurderedCharacters;
 
 
 	UFUNCTION(BlueprintOverride)
@@ -22,40 +22,7 @@ class ASlotAreaVolume : ATriggerVolume
 			{
 				SlotActors.Add(Actor);
 			}
-			if (Actor.IsA(APawn::StaticClass()))
-			{
-				ContainedPawns.Add(Cast<APawn>(Actor));
-			}
 		}
-	}
-
-	UFUNCTION(BlueprintOverride)
-	void ActorBeginOverlap(AActor OtherActor)
-	{
-		if (OtherActor.IsA(APawn::StaticClass()))
-		{
-			ContainedPawns.Add(Cast<APawn>(OtherActor));
-			auto HealthComponent = UHealthComponent::Get(OtherActor);
-			HealthComponent.OnDied.AddUFunction(this, n"CharacterDied");
-		}
-	}
-
-	UFUNCTION(BlueprintOverride)
-	void ActorEndOverlap(AActor OtherActor)
-	{
-		if (OtherActor.IsA(APawn::StaticClass()))
-		{
-			ContainedPawns.Remove(Cast<APawn>(OtherActor));
-			auto HealthComponent = UHealthComponent::Get(OtherActor);
-			HealthComponent.OnDied.UnbindObject(this);
-		}
-	}
-
-	UFUNCTION(NotBlueprintCallable)
-	private void CharacterDied(UHealthComponent HealthComponent)
-	{
-		auto Pawn = Cast<APawn>(HealthComponent.GetOwner());
-		MurderedCharacters.Add(UCharacterComponent::Get(Pawn.GetController()));
 	}
 
 	int NumAvailableSlots() const
