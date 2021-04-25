@@ -27,8 +27,7 @@ class UCharacterInfoWidget : UUserWidget
 		auto CharacterInfo = UCharacterComponent::Get(InController);
 		NameText.SetText(FText::FromString(CharacterInfo.CharacterName.GetFullName()));
 		AgeText.SetText(FText::FromString("Age " + FMath::TruncToInt(CharacterInfo.Age)));
-		CharacterInfo.OnDesireAdded.AddUFunction(this, n"DesireAdded");
-		CharacterInfo.OnDesireRemoved.AddUFunction(this, n"DesireRemoved");
+		ActiveDesires = CharacterInfo.GetDesires();
 	}
 
 	void UpdateWidget(APawn OwningPawn)
@@ -64,18 +63,6 @@ class UCharacterInfoWidget : UUserWidget
 		}
 	}
 
-	UFUNCTION(NotBlueprintCallable)
-	private void DesireAdded(UCharacterComponent CharacterComponent, UDesireBase NewDesire)
-	{
-		ActiveDesires.Add(NewDesire);
-	}
-
-	UFUNCTION(NotBlueprintCallable)
-	private void DesireRemoved(UCharacterComponent CharacterComponent, UDesireBase RemovedDesire)
-	{
-		ActiveDesires.Remove(RemovedDesire);
-	}
-
 	private void UpdateDesireText()
 	{
 		if (Desire::Debug.GetInt() > 0)
@@ -84,7 +71,11 @@ class UCharacterInfoWidget : UUserWidget
 			FString DesireString;
 			for (auto Desire : ActiveDesires)
 			{
-				DesireString += Desire.GetDisplayString() + "(" + Desire.GetWeight() + "), \n";
+				if (Desire.GetWeight() > 0.f)
+				{
+					const int DesirePercent = FMath::RoundToInt(Desire.GetWeight() * 100.f);
+					DesireString += Desire.GetDisplayString() + " (" + DesirePercent + "%), \n";
+				}
 			}
 			DesireText.SetText(FText::FromString(DesireString));
 		}

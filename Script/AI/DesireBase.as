@@ -4,7 +4,7 @@ import AI.Desires;
 UCLASS(Abstract)
 class UDesireBase
 {
-	protected EDesire Type = EDesire::None;
+	protected EDesire Type = EDesire::MAX;
 	protected float Weight = 0.f;
 	protected float TimeActive = 0.f;
 	protected AAIController Controller;
@@ -15,7 +15,7 @@ class UDesireBase
 	{
 		Controller = InController;
 		BeginPlay_Implementation(DesireRequirements);
-		ensure(Type != EDesire::None, "You must specify a desire type for " + Class.GetName() + "!");
+		ensure(Type != EDesire::MAX, "You must specify a desire type for " + Class.GetName() + "!");
 	}
 
 	void Tick(

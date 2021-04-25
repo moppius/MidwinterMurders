@@ -6,7 +6,7 @@ namespace Desire
 
 enum EDesire
 {
-	None,
+	Stand,
 	Drink,
 	Eat,
 	Fight,
@@ -16,6 +16,7 @@ enum EDesire
 	Sleep,
 	Talk,
 	Walk,
+	MAX,
 };
 
 
