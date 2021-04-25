@@ -1,6 +1,6 @@
 import Character.CharacterComponent;
-import Character.CharacterWidget;
 import Components.HealthComponent;
+import HUD.CharacterInfoWidget;
 
 
 UCLASS(Abstract)

@@ -48,3 +48,15 @@ class UTimeOfDayManagerComponent : UActorComponent
 		SunLight.SetActorRotation(FRotator(Pitch, TimeOfDay * 360.f, 0.f));
 	}
 };
+
+
+namespace TimeOfDay
+{
+	FText GetTimeText(float TimeOfDay)
+	{
+		const FTimespan TS = FTimespan::FromDays(TimeOfDay);
+		FString Hour = (TS.GetHours() < 10 ? "0" : "") + TS.GetHours();
+		FString Minute = (TS.GetMinutes() < 10 ? "0" : "") + TS.GetMinutes();
+		return FText::FromString(Hour + ":" + Minute);
+	}
+}
