@@ -60,7 +60,7 @@ struct FDesireRequirement
 	{
 		Name = InName;
 		Value = FMath::RandRange(0.f, 1.f);
-		IncrementRate = IncrementRate;
+		IncrementRate = InIncrementRate;
 	}
 
 	void Modify(float Amount)
