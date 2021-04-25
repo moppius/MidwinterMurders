@@ -122,6 +122,11 @@ class UCharacterComponent : UActorComponent
 		return FMath::GetMappedRangeValueClamped(FVector2D(18.f, 90.f), FVector2D(1.f, 0.2f), Age);
 	}
 
+	void SeePawn(APawn Pawn)
+	{
+		DesireRequirements.FocusActor = Pawn;
+	}
+
 	private void SetGender()
 	{
 		const int GenderIndex = FMath::RandRange(0, 12);

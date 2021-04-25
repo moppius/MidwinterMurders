@@ -1,3 +1,6 @@
+import Tags;
+
+
 event void FOnDiedSignature(UHealthComponent HealthComponent);
 
 
@@ -28,9 +31,15 @@ class UHealthComponent : UActorComponent
 		if (!IsDead())
 		{
 			CurrentHealth -= Damage;
+			auto PawnOwner = Cast<APawn>(Owner);
 			if (IsDead())
 			{
+				PawnOwner.MakeNoise(1.f, PawnOwner, PawnOwner.GetActorLocation(), 6000.f, Tags::DeathScream);
 				OnDied.Broadcast(this);
+			}
+			else
+			{
+				PawnOwner.MakeNoise(1.f, PawnOwner, PawnOwner.GetActorLocation(), 4000.f, Tags::PainScream);
 			}
 		}
 	}
