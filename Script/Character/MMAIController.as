@@ -1,7 +1,8 @@
 import AI.DesireFactory;
-import Character.RelationshipComponent;
 import Character.CharacterComponent;
+import Character.RelationshipComponent;
 import Components.HealthComponent;
+import HUD.MMHUD;
 
 
 UCLASS(Abstract)
@@ -50,5 +51,7 @@ class AMMAIController : AAIController
 	private void Died(UHealthComponent HealthComponent)
 	{
 		Character.Died();
+		AMMHUD HUD = Cast<AMMHUD>(Gameplay::GetPlayerController(0).GetHUD());
+		HUD.AddNotification(Character.CharacterName.GetFullName() + " was murdered!", 3.f);
 	}
 };

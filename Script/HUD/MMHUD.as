@@ -1,4 +1,6 @@
 import HUD.HUDNotificationWidget;
+
+
 class AMMHUD : AHUD
 {
 	UPROPERTY(EditDefaultsOnly, Category=MidwinterMurdersHUD)
@@ -20,9 +22,9 @@ class AMMHUD : AHUD
 		}
 	}
 
-	void PlayerDied()
+	void AddNotification(FString InNotification, float InDuration)
 	{
-		HUDWidget.NotificationWidget.AddNotification("You were murdered!", 0.f);
+		HUDWidget.NotificationWidget.AddNotification(InNotification, InDuration);
 	}
 };
 
