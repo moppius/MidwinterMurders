@@ -42,9 +42,9 @@ class UTimeOfDayManagerComponent : UActorComponent
 
 	private void UpdateSunLight()
 	{
-		const float Wave = FMath::Cos(TimeOfDay * PI * 2.f) * 0.5f;
+		const float TimeOffset = 0.6f; // Hack to align the sun roughly with the day being 0-1 range
+		const float Wave = FMath::Cos((TimeOfDay - TimeOffset) * PI * 2.f) * 0.5f;
 		const float Pitch = (Wave * -SunPitchRange) - SunPitchOffset;
-		SunLight.LightComponent.SetCastShadows(Pitch < 0.f);
 		SunLight.SetActorRotation(FRotator(Pitch, TimeOfDay * 360.f, 0.f));
 	}
 };
