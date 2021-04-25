@@ -85,17 +85,6 @@ class AMMAIController : AAIController
 		}
 	}
 
-	UFUNCTION(NotBlueprintCallable)
-	private void SeePawn(APawn Pawn)
-	{
-		Character.SeePawn(Pawn);
-		if (Sense::Debug.GetInt() > 0)
-		{
-			const FVector Start = GetControlledPawn().GetActorLocation();
-			System::DrawDebugArrow(Start, Pawn.GetActorLocation(), 20.f, FLinearColor::Purple, 1.f);
-		}
-	}
-
 	void AddOwnedArea(UAreaInfoComponent InAreaInfo)
 	{
 		Character.AddOwnedArea(InAreaInfo);
