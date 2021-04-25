@@ -1,4 +1,5 @@
 import AI.DesireBase;
+import Components.HealthComponent;
 
 
 class UDesireMurder : UDesireBase
@@ -20,6 +21,7 @@ class UDesireMurder : UDesireBase
 	{
 		TargetActor = DesireRequirements.FocusActor;
 		DesireRequirements.Boredom = 0.f;
+		CheckTargetHealth();
 	}
 
 	protected void Tick_Implementation(
@@ -27,6 +29,7 @@ class UDesireMurder : UDesireBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
+		CheckTargetHealth();
 		if (Controller.GetControlledPawn().GetDistanceTo(TargetActor) <= AcceptanceRadius)
 		{
 			Gameplay::ApplyDamage(TargetActor, 50.f, Controller, Controller.GetControlledPawn(), UDamageType::StaticClass());
@@ -37,5 +40,14 @@ class UDesireMurder : UDesireBase
 	FVector GetMoveLocation() const override
 	{
 		return (TargetActor != nullptr ? TargetActor : Controller.GetControlledPawn()).GetActorLocation();
+	}
+
+	private void CheckTargetHealth()
+	{
+		auto HealthComponent = UHealthComponent::Get(TargetActor);
+		if (HealthComponent == nullptr || HealthComponent.IsDead())
+		{
+			bIsFinished = true;
+		}
 	}
 };
