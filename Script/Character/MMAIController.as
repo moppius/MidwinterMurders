@@ -26,6 +26,7 @@ class AMMAIController : AAIController
 	UPawnSensingComponent PawnSensing;
 	default PawnSensing.PeripheralVisionAngle = 45.f;
 	default PawnSensing.HearingThreshold = 6000.f;
+	default PawnSensing.bOnlySensePlayers = false;
 
 
 	UFUNCTION(BlueprintOverride)
