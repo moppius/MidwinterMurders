@@ -44,6 +44,11 @@ class UDesireMurder : UDesireBase
 
 	private void CheckTargetHealth()
 	{
+		if (TargetActor == nullptr)
+		{
+			bIsFinished = true;
+			return;
+		}
 		auto HealthComponent = UHealthComponent::Get(TargetActor);
 		if (HealthComponent == nullptr || HealthComponent.IsDead())
 		{
