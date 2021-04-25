@@ -49,9 +49,6 @@ class AMMAIController : AAIController
 	UFUNCTION(NotBlueprintCallable)
 	private void Died(UHealthComponent HealthComponent)
 	{
-		auto Movement = UCharacterMovementComponent::Get(GetControlledPawn());
-		Movement.Deactivate();
-
 		Character.Died();
 	}
 };

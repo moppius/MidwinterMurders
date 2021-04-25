@@ -20,6 +20,8 @@ class AMMCharacter : ACharacter
 	UFUNCTION(BlueprintOverride)
 	void Possessed(AController NewController)
 	{
+		HealthComponent.OnDied.AddUFunction(this, n"Died");
+
 		if (NewController.IsA(APlayerController::StaticClass()))
 		{
 			return;
@@ -42,5 +44,12 @@ class AMMCharacter : ACharacter
 		{
 			CharacterInfoWidget.UpdateWidget(this);
 		}
+	}
+
+	UFUNCTION(NotBlueprintCallable)
+	private void Died(UHealthComponent HealthComponent)
+	{
+		MovementComponent.Deactivate();
+		AddActorLocalRotation(FRotator(-90.f, 0.f, 0.f));
 	}
 };
