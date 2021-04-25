@@ -41,6 +41,10 @@ class UDesireTalk : UDesireBase
 
 			DesireRequirements.Modify(Desires::Boredom, -0.01f * DeltaSeconds);
 			bIsSatisfied = TimeActive > 5.f;
+			if (bIsSatisfied)
+			{
+				DesireRequirements.Modify(Desires::Boredom, -0.5f);
+			}
 		}
 	}
 };
