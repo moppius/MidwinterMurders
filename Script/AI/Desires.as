@@ -57,10 +57,10 @@ struct FDesireRequirement
 	private float Value = 0.f;
 	private float IncrementRate = 0.f;
 
-	FDesireRequirement(FName InName, float InIncrementRate)
+	FDesireRequirement(FName InName, float InIncrementRate, float InitialMax = 1.f)
 	{
 		Name = InName;
-		Value = FMath::RandRange(0.f, 1.f);
+		Value = FMath::RandRange(0.f, InitialMax);
 		IncrementRate = InIncrementRate;
 	}
 
@@ -88,10 +88,10 @@ struct FDesireRequirements
 
 	FDesireRequirements(float Age)
 	{
-		Requirements.Add(FDesireRequirement(Desires::Anger, 0.01f));
+		Requirements.Add(FDesireRequirement(Desires::Anger, 0.005f, 0.5f));
 		Requirements.Add(FDesireRequirement(Desires::Boredom, 0.01f));
 		Requirements.Add(FDesireRequirement(Desires::Fatigue, 0.01f));
-		Requirements.Add(FDesireRequirement(Desires::Fear, -0.04f));
+		Requirements.Add(FDesireRequirement(Desires::Fear, -0.04f, 0.1f));
 		Requirements.Add(FDesireRequirement(Desires::Hunger, 0.02f));
 		Requirements.Add(FDesireRequirement(Desires::Thirst, 0.03f));
 	}
