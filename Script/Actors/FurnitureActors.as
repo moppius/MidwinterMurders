@@ -9,6 +9,7 @@ class AFurnitureActor : AActor
 	UStaticMeshComponent StaticMeshComponent;
 	default StaticMeshComponent.bCanEverAffectNavigation = true;
 	default StaticMeshComponent.Mobility = EComponentMobility::Static;
+	default StaticMeshComponent.SetCollisionProfileName(n"BlockAll");
 
 	UPROPERTY(DefaultComponent)
 	UActorSlotComponent SlotComponent;
