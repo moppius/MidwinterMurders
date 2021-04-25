@@ -13,20 +13,12 @@ class UDesireDrink : UDesireBase
 	void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
 	{
 		Gameplay::GetAllActorsOfClassWithTag(ATriggerVolume::StaticClass(), Tags::Drink, AllDrinkAreas);
-		if (!ensure(AllDrinkAreas.Num() > 0, "No areas tagged as Drink!"))
-		{
-			bIsFinished = true;
-		}
+		ensure(AllDrinkAreas.Num() > 0, "No areas tagged as Drink!");
 	}
 
 	FString GetDisplayString() const override
 	{
-		return IsOverlappingDrinkArea() ? "Drinking" : "Wants to drink";
-	}
-
-	bool InhibitsMove() const override
-	{
-		return IsOverlappingDrinkArea();
+		return (bIsActive && IsOverlappingDrinkArea()) ? "Drinking" : "Wants to drink";
 	}
 
 	FVector GetMoveLocation() const override
@@ -39,16 +31,14 @@ class UDesireDrink : UDesireBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
-		Weight = DesireRequirements.Thirst;
+		Weight = DesireRequirements.GetValue(Desires::Thirst);
 
-		if (IsOverlappingDrinkArea())
+		if (bIsActive && IsOverlappingDrinkArea())
 		{
-			DesireRequirements.Boredom -= 0.01f * DeltaSeconds;
-			DesireRequirements.Thirst -= 0.2f * DeltaSeconds;
-			if (DesireRequirements.Thirst <= 0.1f)
-			{
-				bIsFinished = true;
-			}
+			DesireRequirements.Modify(Desires::Boredom, -0.01f * DeltaSeconds);
+			DesireRequirements.Modify(Desires::Thirst, -0.1f * DeltaSeconds);
+
+			bIsSatisfied = DesireRequirements.GetValue(Desires::Thirst) < 0.1f;
 		}
 	}
 

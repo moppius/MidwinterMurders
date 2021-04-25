@@ -20,16 +20,17 @@ class UDesireSleep : UDesireSlotBase
 		const FPersonality& Personality) override
 	{
 		Super::Tick_Implementation(DeltaSeconds, DesireRequirements, Personality);
+		if (!bIsActive)
+		{
+			return;
+		}
 
-		Weight = DesireRequirements.Fatigue;
+		Weight = DesireRequirements.GetValue(Desires::Fatigue);
 
 		if (IsOccupyingSlot())
 		{
-			DesireRequirements.Fatigue -= 0.1f * DeltaSeconds;
-			if (DesireRequirements.Fatigue <= 0.1f)
-			{
-				Finish();
-			}
+			DesireRequirements.Modify(Desires::Fatigue, -0.1f * DeltaSeconds);
+			bIsSatisfied = DesireRequirements.GetValue(Desires::Fatigue) <= 0.1f;
 		}
 	}
 };

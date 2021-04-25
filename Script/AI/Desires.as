@@ -6,12 +6,9 @@ namespace Desire
 
 enum EDesire
 {
-	Stand,
 	Drink,
 	Eat,
-	Fight,
 	Murder,
-	Run,
 	Sit,
 	Sleep,
 	Talk,
@@ -43,33 +40,101 @@ struct FPersonality
 };
 
 
-struct FDesireRequirements
+namespace Desires
 {
-	float Anger = 0.f;
-	float Boredom = 0.f;
-	float Fatigue = 0.f;
-	float Hunger = 0.f;
-	float Thirst = 0.f;
+	const FName Anger   = n"Anger";
+	const FName Boredom = n"Boredom";
+	const FName Fatigue = n"Fatigue";
+	const FName Hunger  = n"Hunger";
+	const FName Thirst  = n"Thirst";
+}
+
+
+struct FDesireRequirement
+{
+	FName Name = NAME_None;
 	AActor FocusActor;
+	private float Value = 0.f;
+	private float IncrementRate = 0.f;
 
-
-	FDesireRequirements(float Age)
+	FDesireRequirement(FName InName, float InIncrementRate)
 	{
-		Anger = FMath::RandRange(0.f, 1.f);
-		Boredom = FMath::RandRange(0.f, 1.f);
-		Fatigue = FMath::RandRange(0.f, 1.f);
-		Hunger = FMath::RandRange(0.f, 1.f);
-		Thirst = FMath::RandRange(0.f, 1.f);
+		Name = InName;
+		FocusActor = nullptr;
+		Value = FMath::RandRange(0.f, 1.f);
+		IncrementRate = IncrementRate;
+	}
+
+	void Modify(float Amount)
+	{
+		Value = FMath::Clamp(Value + Amount, 0.f, 1.f);
+	}
+
+	float GetValue() const
+	{
+		return Value;
 	}
 
 	void Tick(float DeltaSeconds)
 	{
-		Boredom = FMath::Clamp(Boredom + 0.01f * DeltaSeconds, 0.f, 1.f);
-		Fatigue = FMath::Clamp(Fatigue + 0.01f * DeltaSeconds, 0.f, 1.f);
-		Hunger  = FMath::Clamp(Hunger  + 0.02f * DeltaSeconds, 0.f, 1.f);
-		Thirst  = FMath::Clamp(Thirst  + 0.04f * DeltaSeconds, 0.f, 1.f);
+		Value += DeltaSeconds * IncrementRate;
+	}
+};
 
-		const float AngerMod = 1.f + Hunger + Thirst - Boredom;
-		Anger   = FMath::Clamp(Anger   + 0.01f * AngerMod * DeltaSeconds, 0.f, 1.f);
+
+struct FDesireRequirements
+{
+	TArray<FDesireRequirement> Requirements;
+
+
+	FDesireRequirements(float Age)
+	{
+		Requirements.Add(FDesireRequirement(Desires::Anger, 0.01f));
+		Requirements.Add(FDesireRequirement(Desires::Boredom, 0.01f));
+		Requirements.Add(FDesireRequirement(Desires::Fatigue, 0.01f));
+		Requirements.Add(FDesireRequirement(Desires::Hunger, 0.02f));
+		Requirements.Add(FDesireRequirement(Desires::Thirst, 0.03f));
+	}
+
+	void Tick(float DeltaSeconds)
+	{
+		for (auto& Requirement : Requirements)
+		{
+			Requirement.Tick(DeltaSeconds);
+		}
+	}
+
+	void Modify(FName DesireName, float Amount)
+	{
+		for (auto& Requirement : Requirements)
+		{
+			if (Requirement.Name == DesireName)
+			{
+				Requirement.Modify(Amount);
+				return;
+			}
+		}
+	}
+
+	float GetValue(FName DesireName) const
+	{
+		for (const auto& Requirement : Requirements)
+		{
+			if (Requirement.Name == DesireName)
+			{
+				return Requirement.GetValue();
+			}
+		}
+		return 0.f;
+	}
+
+	FString GetDisplayString() const
+	{
+		FString Result;
+		for (const auto& Requirement : Requirements)
+		{
+			Result += "" + Requirement.Name + ": " + FMath::RoundToInt(Requirement.GetValue() * 100.f) + "%\n";
+		}
+		return Result;
 	}
 };

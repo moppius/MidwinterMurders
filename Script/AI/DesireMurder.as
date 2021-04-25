@@ -7,21 +7,13 @@ class UDesireMurder : UDesireBase
 	default Type = EDesire::Murder;
 
 
-	private AActor TargetActor;
 	private const float AcceptanceRadius = 100.f;
 
 
 	FString GetDisplayString() const override
 	{
-		FString String = CanBePerformed() ? "Murdering " : "Wants to murder ";
-		return String + (System::IsValid(TargetActor) ? "" + TargetActor.GetName() : "nobody");
-	}
-
-	private void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
-	{
-		TargetActor = DesireRequirements.FocusActor;
-		DesireRequirements.Boredom = 0.f;
-		CheckTargetHealth();
+		FString String = InRangeOfTarget() ? "Murdering " : "Wants to murder ";
+		return String + (System::IsValid(FocusActor) ? "" + FocusActor.GetName() : "nobody");
 	}
 
 	protected void Tick_Implementation(
@@ -29,30 +21,36 @@ class UDesireMurder : UDesireBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
-		CheckTargetHealth();
-		if (Controller.GetControlledPawn().GetDistanceTo(TargetActor) <= AcceptanceRadius)
+		if (bIsActive)
 		{
-			Gameplay::ApplyDamage(TargetActor, 50.f, Controller, Controller.GetControlledPawn(), UDamageType::StaticClass());
-			bIsFinished = true;
+			CheckTargetHealth();
+			if (InRangeOfTarget())
+			{
+				Gameplay::ApplyDamage(FocusActor, 50.f, Controller, Controller.GetControlledPawn(), UDamageType::StaticClass());
+			}
 		}
 	}
 
 	FVector GetMoveLocation() const override
 	{
-		return (TargetActor != nullptr ? TargetActor : Controller.GetControlledPawn()).GetActorLocation();
+		return (FocusActor != nullptr ? FocusActor : Controller.GetControlledPawn()).GetActorLocation();
+	}
+
+	private bool InRangeOfTarget() const
+	{
+		return Controller.GetControlledPawn().GetDistanceTo(FocusActor) < AcceptanceRadius;
 	}
 
 	private void CheckTargetHealth()
 	{
-		if (TargetActor == nullptr)
+		if (FocusActor == nullptr)
 		{
-			bIsFinished = true;
 			return;
 		}
-		auto HealthComponent = UHealthComponent::Get(TargetActor);
+		auto HealthComponent = UHealthComponent::Get(FocusActor);
 		if (HealthComponent == nullptr || HealthComponent.IsDead())
 		{
-			bIsFinished = true;
+			bIsSatisfied = true;
 		}
 	}
 };

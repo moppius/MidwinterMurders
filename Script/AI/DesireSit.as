@@ -11,7 +11,7 @@ class UDesireSit : UDesireSlotBase
 
 	FString GetDisplayString() const override
 	{
-		return WithinRangeOfSlotActor() ? "Sitting" : "Wants to sit";
+		return (bIsActive && WithinRangeOfSlotActor()) ? "Sitting" : "Wants to sit";
 	}
 
 	protected void Tick_Implementation(
@@ -19,19 +19,16 @@ class UDesireSit : UDesireSlotBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
+		Weight = DesireRequirements.GetValue(Desires::Fatigue);
+
 		Super::Tick_Implementation(DeltaSeconds, DesireRequirements, Personality);
 
-		Weight = DesireRequirements.Fatigue;
-
-		if (IsOccupyingSlot())
+		if (bIsActive && IsOccupyingSlot())
 		{
-			DesireRequirements.Fatigue -= 0.05f * (1.f + Personality.Stamina) * DeltaSeconds;
-			DesireRequirements.Boredom += 0.1f * DeltaSeconds;
+			DesireRequirements.Modify(Desires::Fatigue, -0.05f * (1.f + Personality.Stamina) * DeltaSeconds);
+			DesireRequirements.Modify(Desires::Boredom, 0.1f * DeltaSeconds);
 
-			if (DesireRequirements.Fatigue <= 0.1f || DesireRequirements.Boredom >= 0.5f)
-			{
-				Finish();
-			}
+			bIsSatisfied = DesireRequirements.GetValue(Desires::Fatigue) < 0.2f;
 		}
 	}
 };

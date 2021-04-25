@@ -18,16 +18,16 @@ class UCharacterInfoWidget : UUserWidget
 	private const FVector CharacterInfoWidgetOffset = FVector(0.f, 0.f, 150.f);
 	private const float InfoVisibilityDistance = 1500.f;
 
-	private TArray<UDesireBase> ActiveDesires;
+	private UCharacterComponent Character;
+
 	private bool bHasDied = false;
 
 
 	void Setup(AController InController)
 	{
-		auto CharacterInfo = UCharacterComponent::Get(InController);
-		NameText.SetText(FText::FromString(CharacterInfo.CharacterName.GetFullName()));
-		AgeText.SetText(FText::FromString("Age " + FMath::TruncToInt(CharacterInfo.Age)));
-		ActiveDesires = CharacterInfo.GetDesires();
+		Character = UCharacterComponent::Get(InController);
+		NameText.SetText(FText::FromString(Character.CharacterName.GetFullName()));
+		AgeText.SetText(FText::FromString("Age " + FMath::TruncToInt(Character.Age)));
 	}
 
 	void UpdateWidget(APawn OwningPawn)
@@ -69,14 +69,16 @@ class UCharacterInfoWidget : UUserWidget
 		{
 			DesireText.SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 			FString DesireString;
-			for (auto Desire : ActiveDesires)
+			const auto& Desires = Character.GetDesires();
+			for (const auto& Desire : Desires)
 			{
 				if (Desire.GetWeight() > 0.f)
 				{
 					const int DesirePercent = FMath::RoundToInt(Desire.GetWeight() * 100.f);
-					DesireString += Desire.GetDisplayString() + " (" + DesirePercent + "%), \n";
+					DesireString += Desire.GetDisplayString() + " (" + DesirePercent + "%)\n";
 				}
 			}
+			DesireString += "\n" + Character.GetDesireRequirements().GetDisplayString();
 			DesireText.SetText(FText::FromString(DesireString));
 		}
 		else

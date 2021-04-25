@@ -8,7 +8,9 @@ class UDesireBase
 	protected float Weight = 0.f;
 	protected float TimeActive = 0.f;
 	protected AAIController Controller;
-	protected bool bIsFinished = false;
+	protected AActor FocusActor;
+	protected bool bIsActive = false;
+	protected bool bIsSatisfied = false;
 
 
 	void BeginPlay(AAIController InController, FDesireRequirements& DesireRequirements) final
@@ -23,21 +25,41 @@ class UDesireBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality)
 	{
-		if (CanBePerformed() && !bIsFinished)
+		TimeActive += DeltaSeconds;
+		Tick_Implementation(DeltaSeconds, DesireRequirements, Personality);
+		if (bIsActive && bIsSatisfied)
 		{
-			TimeActive += DeltaSeconds;
-			Tick_Implementation(DeltaSeconds, DesireRequirements, Personality);
+			Deactivate();
 		}
 	}
 
-	bool CanBePerformed() const
+	void Activate() final
 	{
-		return true;
+		if (Desire::Debug.GetInt() > 0)
+		{
+			Log("Activating " + Type);
+		}
+		bIsActive = true;
+		bIsSatisfied = false;
 	}
 
-	bool InhibitsMove() const
+	private void Deactivate() final
 	{
-		return false;
+		if (Desire::Debug.GetInt() > 0)
+		{
+			Log("Deactivating " + Type);
+		}
+		bIsActive = false;
+	}
+
+	bool IsActive() final
+	{
+		return bIsActive;
+	}
+
+	bool IsSatisfied() final
+	{
+		return bIsSatisfied;
 	}
 
 	FString GetDisplayString() const
@@ -56,11 +78,6 @@ class UDesireBase
 		return 0.f;
 	}
 
-	bool IsFinished() const final
-	{
-		return bIsFinished;
-	}
-
 	EDesire GetType() const final
 	{
 		return Type;
@@ -69,6 +86,11 @@ class UDesireBase
 	float GetWeight() const final
 	{
 		return Weight;
+	}
+
+	AActor GetFocusActor() const
+	{
+		return FocusActor;
 	}
 
 	private void BeginPlay_Implementation(FDesireRequirements& DesireRequirements)

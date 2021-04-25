@@ -48,9 +48,13 @@ class AMMAIController : AAIController
 			return;
 		}
 
-		if (Character.CanMove() && GetMoveStatus() == EPathFollowingStatus::Idle)
+		if (GetMoveStatus() == EPathFollowingStatus::Idle)
 		{
-			MoveToLocation(Character.GetBestMoveLocation());
+			FVector NewLocation;
+			if (Character.GetMoveLocation(NewLocation))
+			{
+				MoveToLocation(NewLocation);
+			}
 		}
 
 		if (Desire::Debug.GetInt() > 0 && GetMoveStatus() != EPathFollowingStatus::Idle)

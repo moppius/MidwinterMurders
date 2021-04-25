@@ -25,6 +25,7 @@ class UCharacterComponent : UActorComponent
 	private FDesireRequirements DesireRequirements;
 
 	private TArray<UDesireBase> Desires;
+	private UDesireBase HighestDesire;
 
 	private AAIController AIController;
 	private bool bIsDead = false;
@@ -63,6 +64,11 @@ class UCharacterComponent : UActorComponent
 		return Desires;
 	}
 
+	const FDesireRequirements& GetDesireRequirements() const
+	{
+		return DesireRequirements;
+	}
+
 	UFUNCTION(BlueprintOverride)
 	void Tick(float DeltaSeconds)
 	{
@@ -71,42 +77,41 @@ class UCharacterComponent : UActorComponent
 			return;
 		}
 
+		float HighestDesireWeight = -MAX_flt;
+		UDesireBase HighestNewDesire = nullptr;
 		for (int i = Desires.Num(); i > 0; i--)
 		{
 			const int Index = i - 1;
 			UDesireBase& Desire = Desires[Index];
 			Desire.Tick(DeltaSeconds, DesireRequirements, Personality);
+			if (Desire.GetWeight() > HighestDesireWeight)
+			{
+				HighestDesireWeight = Desire.GetWeight();
+				HighestNewDesire = Desire;
+			}
+			if (Desire.IsActive())
+			{
+				HighestDesireWeight = MAX_flt;
+				HighestNewDesire = nullptr;
+			}
+		}
+		if (HighestNewDesire != nullptr)
+		{
+			HighestNewDesire.Activate();
+			HighestDesire = HighestNewDesire;
 		}
 
 		DesireRequirements.Tick(DeltaSeconds);
 	}
 
-	bool CanMove() const
+	bool GetMoveLocation(FVector& OutLocation) const
 	{
-		for (auto Desire : Desires)
+		if (HighestDesire != nullptr)
 		{
-			if (Desire.InhibitsMove())
-			{
-				return false;
-			}
+			OutLocation = HighestDesire.GetMoveLocation();
+			return true;
 		}
-		return Desires.Num() > 0;
-	}
-
-	FVector GetBestMoveLocation() const
-	{
-		UDesireBase HighestDesire;
-		float HighestWeight = -MAX_flt;
-		for (auto Desire : Desires)
-		{
-			const float Weight = Desire.GetWeight();
-			if (Weight > HighestWeight)
-			{
-				HighestDesire = Desire;
-				HighestWeight = Weight;
-			}
-		}
-		return HighestDesire.GetMoveLocation();
+		return false;
 	}
 
 	float GetMaxWalkSpeedModifier() const
@@ -116,7 +121,6 @@ class UCharacterComponent : UActorComponent
 
 	void SeePawn(APawn Pawn)
 	{
-		DesireRequirements.FocusActor = Pawn;
 	}
 
 	private void SetGender()
@@ -131,32 +135,6 @@ class UCharacterComponent : UActorComponent
 		{
 			Gender = ETextGender::Masculine;
 		}
-	}
-
-	private AActor GetNewFocusActor() const
-	{
-		TArray<APawn> AllPawns;
-		GetAllActorsOfClass(AllPawns);
-		if (AllPawns.Num() > 0)
-		{
-			if (DesireRequirements.FocusActor != nullptr && DesireRequirements.FocusActor.IsA(APawn::StaticClass()))
-			{
-				AllPawns.Remove(Cast<APawn>(DesireRequirements.FocusActor));
-			}
-			for (auto Pawn : AllPawns)
-			{
-				if (Pawn.GetController().IsA(AAIController::StaticClass()))
-				{
-					auto HealthComponent = UHealthComponent::Get(Pawn);
-					if (!HealthComponent.IsDead())
-					{
-						return Pawn;
-					}
-				}
-			}
-			return AllPawns[FMath::RandRange(0, AllPawns.Num() - 1)];
-		}
-		return nullptr;
 	}
 
 	void Died()

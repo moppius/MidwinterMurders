@@ -13,20 +13,12 @@ class UDesireEat : UDesireBase
 	void BeginPlay_Implementation(FDesireRequirements& DesireRequirements) override
 	{
 		Gameplay::GetAllActorsOfClassWithTag(ATriggerVolume::StaticClass(), Tags::Food, AllFoodAreas);
-		if (!ensure(AllFoodAreas.Num() > 0, "No areas tagged as Food!"))
-		{
-			bIsFinished = true;
-		}
+		ensure(AllFoodAreas.Num() > 0, "No areas tagged as Food!");
 	}
 
 	FString GetDisplayString() const override
 	{
-		return IsOverlappingFoodArea() ? "Eating" : "Wants to eat";
-	}
-
-	bool InhibitsMove() const override
-	{
-		return IsOverlappingFoodArea();
+		return (bIsActive && IsOverlappingFoodArea()) ? "Eating" : "Wants to eat";
 	}
 
 	protected void Tick_Implementation(
@@ -34,16 +26,15 @@ class UDesireEat : UDesireBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
-		Weight = DesireRequirements.Hunger;
+		Weight = DesireRequirements.GetValue(Desires::Hunger);
 
-		if (IsOverlappingFoodArea())
+		if (bIsActive && IsOverlappingFoodArea())
 		{
-			DesireRequirements.Boredom -= 0.01f * DeltaSeconds;
-			DesireRequirements.Hunger -= 0.2f * DeltaSeconds;
-			if (DesireRequirements.Hunger <= 0.1f)
-			{
-				bIsFinished = true;
-			}
+			DesireRequirements.Modify(Desires::Boredom, -0.01f * DeltaSeconds);
+			DesireRequirements.Modify(Desires::Hunger, -0.1f * DeltaSeconds);
+			DesireRequirements.Modify(Desires::Thirst, 0.01f * DeltaSeconds);
+
+			bIsSatisfied = DesireRequirements.GetValue(Desires::Hunger) < 0.1f;
 		}
 	}
 

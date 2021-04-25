@@ -26,15 +26,7 @@ class UDesireSlotBase : UDesireBase
 				AllSlotActors.Add(Actor);
 			}
 		}
-		if (AllSlotActors.Num() == 0)
-		{
-			bIsFinished = true;
-		}
-	}
-
-	bool InhibitsMove() const override
-	{
-		return WithinRangeOfSlotActor();
+		ensure(AllSlotActors.Num() > 0, "No slot actors found for " + Type);
 	}
 
 	FVector GetMoveLocation() const override
@@ -51,6 +43,16 @@ class UDesireSlotBase : UDesireBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
+		if (!bIsActive)
+		{
+			if (OccupiedSlot != nullptr)
+			{
+				OccupiedSlot.VacateSlot(Controller.GetControlledPawn());
+				OccupiedSlot = nullptr;
+			}
+			return;
+		}
+
 		if (OccupiedSlot == nullptr)
 		{
 			AActor NewClosestAvailableSlotActor = AIUtils::GetClosestActorWithAvailableSlot(
@@ -71,21 +73,11 @@ class UDesireSlotBase : UDesireBase
 				OccupiedSlot = UActorSlotComponent::Get(ClosestAvailableSlotActor);
 				if (OccupiedSlot == nullptr)
 				{
-					bIsFinished = true;
 					return;
 				}
 			}
 
 			OccupiedSlot.OccupySlot(Controller.GetControlledPawn());
-
-			DesireRequirements.Fatigue -= 0.05f * (1.f + Personality.Stamina) * DeltaSeconds;
-			DesireRequirements.Boredom += 0.1f * DeltaSeconds;
-
-			if (DesireRequirements.Fatigue <= 0.1f || DesireRequirements.Boredom >= 0.5f)
-			{
-				OccupiedSlot.VacateSlot(Controller.GetControlledPawn());
-				bIsFinished = true;
-			}
 		}
 		else if (OccupiedSlot != nullptr)
 		{
@@ -97,15 +89,6 @@ class UDesireSlotBase : UDesireBase
 	protected bool IsOccupyingSlot() const final
 	{
 		return OccupiedSlot != nullptr;
-	}
-
-	protected void Finish()
-	{
-		if (OccupiedSlot != nullptr)
-		{
-			OccupiedSlot.VacateSlot(Controller.GetControlledPawn());
-		}
-		bIsFinished = true;
 	}
 
 	protected bool WithinRangeOfSlotActor() const final
