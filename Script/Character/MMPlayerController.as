@@ -29,6 +29,7 @@ class AMMPlayerController : APlayerController
 	private void Died(UHealthComponent HealthComponent)
 	{
 		Character.Died();
-		MMHUD.AddNotification("You were murdered!", 0.f);
+		MMHUD.AddNotification("You are dead.", 0.f);
+		MMHUD.AddNotification("You were murdered!", 3.f);
 	}
 };
