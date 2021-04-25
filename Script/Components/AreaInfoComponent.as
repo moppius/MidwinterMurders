@@ -3,7 +3,7 @@ import Components.HealthComponent;
 
 class UAreaInfoComponent : UActorComponent
 {
-	UPROPERTY(EditDefaultsOnly, Category=AreaInfo)
+	UPROPERTY(Category=AreaInfo)
 	const FString AreaName = "Default Area Name";
 
 	private TArray<APawn> ContainedPawns;
