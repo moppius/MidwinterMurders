@@ -50,6 +50,7 @@ class AMMCharacter : ACharacter
 	private void Died(UHealthComponent HealthComponent)
 	{
 		MovementComponent.Deactivate();
-		AddActorLocalRotation(FRotator(-90.f, 0.f, 0.f));
+		Mesh.SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		Mesh.SetPhysicsBlendWeight(1.f);
 	}
 };
