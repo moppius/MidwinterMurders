@@ -215,6 +215,10 @@ class UCharacterComponent : UActorComponent
 	void Died()
 	{
 		SetComponentTickEnabled(false);
+		for (auto& Desire : Desires)
+		{
+			OnDesireRemoved.Broadcast(this, Desire);
+		}
 		Desires.Empty();
 	}
 };
