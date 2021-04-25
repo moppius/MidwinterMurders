@@ -20,7 +20,7 @@ class UDesireSleep : UDesireSlotBase
 
 	FString GetDisplayString() const override
 	{
-		return (bIsActive && WithinRangeOfSlotActor()) ? "Sleeping" : "Wants to sleep";
+		return (bIsActive && IsOccupyingSlot()) ? "Sleeping" : "Wants to sleep";
 	}
 
 	protected void Tick_Implementation(
@@ -39,8 +39,8 @@ class UDesireSleep : UDesireSlotBase
 
 		if (IsOccupyingSlot())
 		{
-			DesireRequirements.Modify(Desires::Fatigue, -0.1f * DeltaSeconds);
-			bIsSatisfied = DesireRequirements.GetValue(Desires::Fatigue) <= 0.1f;
+			DesireRequirements.Modify(Desires::Fatigue, -0.05f * DeltaSeconds);
+			bIsSatisfied = DesireRequirements.GetValue(Desires::Fatigue) + SleepyTime < 0.01f;
 		}
 	}
 };

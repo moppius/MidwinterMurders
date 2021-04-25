@@ -66,23 +66,13 @@ class UDesireSlotBase : UDesireBase
 			}
 		}
 
-		if (WithinRangeOfSlotActor())
+		if (ReadyToOccupySlot())
 		{
-			if (OccupiedSlot == nullptr)
+			OccupiedSlot = UActorSlotComponent::Get(ClosestAvailableSlotActor);
+			if (ensure(OccupiedSlot != nullptr))
 			{
-				OccupiedSlot = UActorSlotComponent::Get(ClosestAvailableSlotActor);
-				if (OccupiedSlot == nullptr)
-				{
-					return;
-				}
+				OccupiedSlot.OccupySlot(Controller.GetControlledPawn());
 			}
-
-			OccupiedSlot.OccupySlot(Controller.GetControlledPawn());
-		}
-		else if (OccupiedSlot != nullptr)
-		{
-			OccupiedSlot.VacateSlot(Controller.GetControlledPawn());
-			OccupiedSlot = nullptr;
 		}
 	}
 
@@ -91,13 +81,9 @@ class UDesireSlotBase : UDesireBase
 		return OccupiedSlot != nullptr;
 	}
 
-	protected bool WithinRangeOfSlotActor() const final
+	protected bool ReadyToOccupySlot() const final
 	{
-		if (OccupiedSlot != nullptr)
-		{
-			return true;
-		}
-		if (ClosestAvailableSlotActor == nullptr)
+		if (IsOccupyingSlot() || ClosestAvailableSlotActor == nullptr)
 		{
 			return false;
 		}

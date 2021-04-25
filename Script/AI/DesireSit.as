@@ -11,7 +11,7 @@ class UDesireSit : UDesireSlotBase
 
 	FString GetDisplayString() const override
 	{
-		return (bIsActive && WithinRangeOfSlotActor()) ? "Sitting" : "Wants to sit";
+		return (bIsActive && IsOccupyingSlot()) ? "Sitting" : "Wants to sit";
 	}
 
 	protected void Tick_Implementation(
