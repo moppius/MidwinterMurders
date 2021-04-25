@@ -58,6 +58,10 @@ namespace AIUtils
 				LivingPawns.Add(Pawn);
 			}
 		}
-		return LivingPawns[FMath::RandRange(0, LivingPawns.Num() - 1)];
+		if (LivingPawns.Num() > 0)
+		{
+			return LivingPawns[FMath::RandRange(0, LivingPawns.Num() - 1)];
+		}
+		return nullptr;
 	}
 }
