@@ -16,9 +16,10 @@ class UDesireWalk : UDesireBase
 		return bIsActive ? "Walking" : "Wants to walk";
 	}
 
-	FVector GetMoveLocation() const override
+	bool GetMoveLocation(FVector& OutLocation) const override
 	{
-		return Target;
+		OutLocation = Target;
+		return bHasTarget;
 	}
 
 	protected void Tick_Implementation(

@@ -68,10 +68,10 @@ class UDesireBase
 		return "GetDisplayString() not implemented for " + Class.GetName();
 	}
 
-	FVector GetMoveLocation() const
+	bool GetMoveLocation(FVector& OutLocation) const
 	{
 		ensure(false, "GetMoveLocation() not implemented for " + Class.GetName());
-		return FVector::ZeroVector;
+		return false;
 	}
 
 	float GetDesireModifier(EDesire OtherDesire) const

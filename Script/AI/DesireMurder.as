@@ -43,9 +43,14 @@ class UDesireMurder : UDesireBase
 		}
 	}
 
-	FVector GetMoveLocation() const override
+	bool GetMoveLocation(FVector& OutLocation) const override
 	{
-		return FocusActor != nullptr ? FocusActor.GetActorLocation() : FVector::ZeroVector;
+		if (FocusActor != nullptr)
+		{
+			OutLocation = FocusActor.GetActorLocation();
+			return true;
+		}
+		return false;
 	}
 
 	private bool InRangeOfTarget() const

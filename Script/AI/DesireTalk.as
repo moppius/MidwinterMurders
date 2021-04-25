@@ -15,13 +15,14 @@ class UDesireTalk : UDesireBase
 		return String + (System::IsValid(FocusActor) ? "" + FocusActor.GetName() : "nobody");
 	}
 
-	FVector GetMoveLocation() const override
+	bool GetMoveLocation(FVector& OutLocation) const override
 	{
-		if (FocusActor == nullptr)
+		if (FocusActor != nullptr)
 		{
-			return FVector::ZeroVector;
+			OutLocation = FocusActor.GetActorLocation();
+			return true;
 		}
-		return FocusActor.GetActorLocation();
+		return false;
 	}
 
 	protected void Tick_Implementation(

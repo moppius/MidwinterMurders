@@ -108,8 +108,7 @@ class UCharacterComponent : UActorComponent
 	{
 		if (HighestDesire != nullptr)
 		{
-			OutLocation = HighestDesire.GetMoveLocation();
-			return true;
+			return HighestDesire.GetMoveLocation(OutLocation);
 		}
 		return false;
 	}

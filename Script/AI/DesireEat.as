@@ -38,9 +38,10 @@ class UDesireEat : UDesireBase
 		}
 	}
 
-	FVector GetMoveLocation() const override
+	bool GetMoveLocation(FVector& OutLocation) const override
 	{
-		return AIUtils::GetClosestActor(Controller.GetControlledPawn(), AllFoodAreas).GetActorLocation();
+		OutLocation = AIUtils::GetClosestActor(Controller.GetControlledPawn(), AllFoodAreas).GetActorLocation();
+		return true;
 	}
 
 	private bool IsOverlappingFoodArea() const

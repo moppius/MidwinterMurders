@@ -29,13 +29,14 @@ class UDesireSlotBase : UDesireBase
 		ensure(AllSlotActors.Num() > 0, "No slot actors found for " + Type);
 	}
 
-	FVector GetMoveLocation() const override
+	bool GetMoveLocation(FVector& OutLocation) const override
 	{
-		if (ClosestAvailableSlotActor == nullptr)
+		if (ClosestAvailableSlotActor != nullptr)
 		{
-			return Controller.GetControlledPawn().GetActorLocation();
+			OutLocation = ClosestAvailableSlotActor.GetActorLocation();
+			return true;
 		}
-		return ClosestAvailableSlotActor.GetActorLocation();
+		return false;
 	}
 
 	protected void Tick_Implementation(

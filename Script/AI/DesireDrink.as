@@ -21,9 +21,10 @@ class UDesireDrink : UDesireBase
 		return (bIsActive && IsOverlappingDrinkArea()) ? "Drinking" : "Wants to drink";
 	}
 
-	FVector GetMoveLocation() const override
+	bool GetMoveLocation(FVector& OutLocation) const override
 	{
-		return AIUtils::GetClosestActor(Controller.GetControlledPawn(), AllDrinkAreas).GetActorLocation();
+		OutLocation = AIUtils::GetClosestActor(Controller.GetControlledPawn(), AllDrinkAreas).GetActorLocation();
+		return true;
 	}
 
 	protected void Tick_Implementation(
