@@ -45,6 +45,7 @@ namespace Desires
 	const FName Anger   = n"Anger";
 	const FName Boredom = n"Boredom";
 	const FName Fatigue = n"Fatigue";
+	const FName Fear    = n"Fear";
 	const FName Hunger  = n"Hunger";
 	const FName Thirst  = n"Thirst";
 }
@@ -90,6 +91,7 @@ struct FDesireRequirements
 		Requirements.Add(FDesireRequirement(Desires::Anger, 0.01f));
 		Requirements.Add(FDesireRequirement(Desires::Boredom, 0.01f));
 		Requirements.Add(FDesireRequirement(Desires::Fatigue, 0.01f));
+		Requirements.Add(FDesireRequirement(Desires::Fear, -0.04f));
 		Requirements.Add(FDesireRequirement(Desires::Hunger, 0.02f));
 		Requirements.Add(FDesireRequirement(Desires::Thirst, 0.03f));
 	}

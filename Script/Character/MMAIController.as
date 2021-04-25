@@ -77,11 +77,15 @@ class AMMAIController : AAIController
 	UFUNCTION(NotBlueprintCallable)
 	private void TargetPerceptionUpdated(AActor Actor, FAIStimulus Stimulus)
 	{
-		if (Stimulus.Tag == Tags::PainScream)
+		// HACK: Unfortunately UAIPerceptionSystem::GetSenseClassForStimulus() crashes Unreal here,
+		//       so I'm just hackin' this in with tag prefixes :(
+		if (Stimulus.Tag.ToString().StartsWith(Tags::Noise.ToString()))
 		{
+			Character.HearStimulus(Actor, Stimulus);
 		}
-		else if (Stimulus.Tag == Tags::DeathScream)
+		else
 		{
+			Character.SeeStimulus(Actor, Stimulus);
 		}
 	}
 

@@ -38,6 +38,7 @@ class UDesireMurder : UDesireBase
 
 			if (bIsSatisfied)
 			{
+				DesireRequirements.Modify(Desires::Fear, -0.5f);
 				DesireRequirements.Modify(Desires::Anger, -0.5f);
 			}
 		}

@@ -32,6 +32,8 @@ class UCharacterComponent : UActorComponent
 	private AAIController AIController;
 	private bool bIsDead = false;
 
+	private TMap<FName, float> SenseTagMemory;
+
 
 	UFUNCTION(BlueprintOverride)
 	void BeginPlay()
@@ -76,6 +78,29 @@ class UCharacterComponent : UActorComponent
 		OwnedAreas.Add(InAreaInfo);
 	}
 
+	void HearStimulus(AActor Actor, FAIStimulus Stimulus)
+	{
+		SenseTagMemory.Add(Stimulus.Tag, 60.f);
+		if (Stimulus.Tag == Tags::PainScream)
+		{
+			DesireRequirements.Modify(Desires::Fear, 0.25f);
+		}
+		else if (Stimulus.Tag == Tags::DeathScream)
+		{
+			DesireRequirements.Modify(Desires::Fear, 0.5f);
+		}
+	}
+
+	void SeeStimulus(AActor Actor, FAIStimulus Stimulus)
+	{
+		SenseTagMemory.Add(Stimulus.Tag, 60.f);
+		auto HealthComponent = UHealthComponent::Get(Actor);
+		if (HealthComponent != nullptr && HealthComponent.IsDead())
+		{
+			DesireRequirements.Modify(Desires::Fear, 0.5f);
+		}
+	}
+
 	UFUNCTION(BlueprintOverride)
 	void Tick(float DeltaSeconds)
 	{
@@ -109,6 +134,20 @@ class UCharacterComponent : UActorComponent
 		}
 
 		DesireRequirements.Tick(DeltaSeconds);
+
+		TArray<FName> RemoveTags;
+		for (auto& It : SenseTagMemory)
+		{
+			It.SetValue(It.GetValue() - DeltaSeconds);
+			if (It.GetValue() <= 0.f)
+			{
+				RemoveTags.Add(It.GetKey());
+			}
+		}
+		for (auto Tag : RemoveTags)
+		{
+			SenseTagMemory.Remove(Tag);
+		}
 	}
 
 	bool GetMoveLocation(FVector& OutLocation) const
