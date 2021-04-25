@@ -26,6 +26,8 @@ struct FActorSlot
 		Occupier = NewOccupier;
 		OccupierArrivalTransform = Occupier.GetActorTransform();
 		Occupier.SetActorTransform(Transform);
+		auto Movement = UMovementComponent::Get(NewOccupier);
+		Movement.Deactivate();
 	}
 
 	bool TryVacate(AActor MaybeOccupier)
@@ -33,6 +35,8 @@ struct FActorSlot
 		if (Occupier == MaybeOccupier)
 		{
 			Occupier.SetActorTransform(OccupierArrivalTransform);
+			auto Movement = UMovementComponent::Get(Occupier);
+			Movement.Activate();
 			Occupier = nullptr;
 			return true;
 		}
