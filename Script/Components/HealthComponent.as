@@ -23,10 +23,13 @@ class UHealthComponent : UActorComponent
 	UFUNCTION(NotBlueprintCallable)
 	private void TakeAnyDamage(AActor DamagedActor, float Damage, const UDamageType DamageType, AController InstigatedBy, AActor DamageCauser)
 	{
-		CurrentHealth -= Damage;
-		if (CurrentHealth < 0.f)
+		if (!IsDead())
 		{
-			OnDied.Broadcast(this);
+			CurrentHealth -= Damage;
+			if (IsDead())
+			{
+				OnDied.Broadcast(this);
+			}
 		}
 	}
 };
