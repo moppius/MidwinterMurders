@@ -1,6 +1,7 @@
 import AI.DesireFactory;
 import Character.CharacterComponent;
 import Character.RelationshipComponent;
+import Components.AreaInfoComponent;
 import Components.HealthComponent;
 import HUD.MMHUD;
 
@@ -93,5 +94,10 @@ class AMMAIController : AAIController
 			const FVector Start = GetControlledPawn().GetActorLocation();
 			System::DrawDebugArrow(Start, Pawn.GetActorLocation(), 20.f, FLinearColor::Purple, 1.f);
 		}
+	}
+
+	void AddOwnedArea(UAreaInfoComponent InAreaInfo)
+	{
+		Character.AddOwnedArea(InAreaInfo);
 	}
 };

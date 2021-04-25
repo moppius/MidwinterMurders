@@ -6,6 +6,12 @@ class UAreaInfoComponent : UActorComponent
 	UPROPERTY(Category=AreaInfo)
 	const FString AreaName = "Default Area Name";
 
+	UPROPERTY(EditConst, Category=AreaInfo)
+	AAIController OwnerController;
+
+	UPROPERTY(Category=AreaInfo)
+	FGameplayTagContainer AreaTags;
+
 	private TArray<APawn> ContainedPawns;
 	private TArray<APawn> MurderedPawns;
 

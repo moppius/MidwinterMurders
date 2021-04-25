@@ -81,10 +81,27 @@ class AMMGameMode : AGameModeBase
 	{
 		auto NewAI = Cast<AMMAIController>(SpawnActor(DefaultAIControllerClass.Get()));
 		CharacterAIs.Add(NewAI);
+		PossessUnownedArea(NewAI);
 		if (ShouldAddMoreCharacters())
 		{
 			AddRelatedAIs(NewAI);
 		}
 		return NewAI;
+	}
+
+	private void PossessUnownedArea(AMMAIController AIController)
+	{
+		TArray<ATriggerVolume> AllAreas;
+		GetAllActorsOfClass(AllAreas);
+		for (auto Area : AllAreas)
+		{
+			auto AreaInfo = UAreaInfoComponent::Get(Area);
+			if (AreaInfo.OwnerController == nullptr)
+			{
+				AreaInfo.OwnerController = AIController;
+				AIController.AddOwnedArea(AreaInfo);
+				break;
+			}
+		}
 	}
 };

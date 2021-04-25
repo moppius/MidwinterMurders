@@ -3,6 +3,7 @@ import AI.Desires;
 import Character.CharacterData;
 import Character.RelationshipComponent;
 import Components.HealthComponent;
+import Components.AreaInfoComponent;
 
 
 class UCharacterComponent : UActorComponent
@@ -27,6 +28,7 @@ class UCharacterComponent : UActorComponent
 	private TArray<UDesireBase> Desires;
 	private UDesireBase HighestDesire;
 
+	private TArray<UAreaInfoComponent> OwnedAreas;
 	private AAIController AIController;
 	private bool bIsDead = false;
 
@@ -67,6 +69,11 @@ class UCharacterComponent : UActorComponent
 	const FDesireRequirements& GetDesireRequirements() const
 	{
 		return DesireRequirements;
+	}
+
+	void AddOwnedArea(UAreaInfoComponent InAreaInfo)
+	{
+		OwnedAreas.Add(InAreaInfo);
 	}
 
 	UFUNCTION(BlueprintOverride)
