@@ -202,10 +202,13 @@ class UCharacterComponent : UActorComponent
 			}
 			for (auto Pawn : AllPawns)
 			{
-				auto HealthComponent = UHealthComponent::Get(Pawn);
-				if (!HealthComponent.IsDead())
+				if (Pawn.GetController().IsA(AAIController::StaticClass()))
 				{
-					return Pawn;
+					auto HealthComponent = UHealthComponent::Get(Pawn);
+					if (!HealthComponent.IsDead())
+					{
+						return Pawn;
+					}
 				}
 			}
 			return AllPawns[FMath::RandRange(0, AllPawns.Num() - 1)];
