@@ -34,6 +34,7 @@ class UCharacterComponent : UActorComponent
 	private TArray<UDesireBase> Desires;
 
 	private AAIController AIController;
+	private bool bIsDead = false;
 
 
 	UFUNCTION(BlueprintOverride)
@@ -57,7 +58,7 @@ class UCharacterComponent : UActorComponent
 	UFUNCTION(BlueprintOverride)
 	void Tick(float DeltaSeconds)
 	{
-		if (AIController.GetControlledPawn() == nullptr)
+		if (AIController.GetControlledPawn() == nullptr || bIsDead)
 		{
 			return;
 		}
@@ -214,6 +215,7 @@ class UCharacterComponent : UActorComponent
 
 	void Died()
 	{
+		bIsDead = true;
 		SetComponentTickEnabled(false);
 		for (auto& Desire : Desires)
 		{
