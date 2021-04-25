@@ -1,4 +1,5 @@
 import Components.ActorSlotComponent;
+import Components.HealthComponent;
 
 
 namespace AIUtils
@@ -42,5 +43,21 @@ namespace AIUtils
 			}
 		}
 		return ClosestActorWithSlot;
+	}
+
+	APawn GetLivingPawn(AActor Self)
+	{
+		TArray<APawn> AllPawns;
+		GetAllActorsOfClass(AllPawns);
+		TArray<APawn> LivingPawns;
+		for (auto Pawn : AllPawns)
+		{
+			auto HealthComponent = UHealthComponent::Get(Pawn);
+			if (!HealthComponent.IsDead() && Pawn != Self)
+			{
+				LivingPawns.Add(Pawn);
+			}
+		}
+		return LivingPawns[FMath::RandRange(0, LivingPawns.Num() - 1)];
 	}
 }

@@ -1,4 +1,5 @@
 import AI.DesireBase;
+import AI.Utils;
 import Components.HealthComponent;
 
 
@@ -6,13 +7,12 @@ class UDesireMurder : UDesireBase
 {
 	default Type = EDesire::Murder;
 
-
 	private const float AcceptanceRadius = 100.f;
 
 
 	FString GetDisplayString() const override
 	{
-		FString String = InRangeOfTarget() ? "Murdering " : "Wants to murder ";
+		FString String = (bIsActive && InRangeOfTarget()) ? "Murdering " : "Wants to murder ";
 		return String + (System::IsValid(FocusActor) ? "" + FocusActor.GetName() : "nobody");
 	}
 
@@ -21,8 +21,15 @@ class UDesireMurder : UDesireBase
 		FDesireRequirements& DesireRequirements,
 		const FPersonality& Personality) override
 	{
+		Weight = DesireRequirements.GetValue(Desires::Anger);
+
 		if (bIsActive)
 		{
+			if (FocusActor == nullptr)
+			{
+				FocusActor = AIUtils::GetLivingPawn(Controller.GetControlledPawn());
+			}
+
 			CheckTargetHealth();
 			if (InRangeOfTarget())
 			{
@@ -33,7 +40,7 @@ class UDesireMurder : UDesireBase
 
 	FVector GetMoveLocation() const override
 	{
-		return (FocusActor != nullptr ? FocusActor : Controller.GetControlledPawn()).GetActorLocation();
+		return FocusActor != nullptr ? FocusActor.GetActorLocation() : FVector::ZeroVector;
 	}
 
 	private bool InRangeOfTarget() const
