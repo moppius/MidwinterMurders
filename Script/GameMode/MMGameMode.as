@@ -1,9 +1,13 @@
 import Character.MMAIController;
+import Components.TimeOfDayManager;
 import GameMode.SpawnPoint;
 
 
 class AMMGameMode : AGameModeBase
 {
+	UPROPERTY(DefaultComponent)
+	UTimeOfDayManagerComponent TimeOfDayManager;
+
 	UPROPERTY(EditDefaultsOnly, Category=Classes)
 	private const TSubclassOf<AMMAIController> DefaultAIControllerClass;
 
