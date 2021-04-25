@@ -8,6 +8,7 @@ class AFurnitureActor : AActor
 	UPROPERTY(DefaultComponent, RootComponent, ShowOnActor)
 	UStaticMeshComponent StaticMeshComponent;
 	default StaticMeshComponent.bCanEverAffectNavigation = true;
+	default StaticMeshComponent.Mobility = EComponentMobility::Static;
 
 	UPROPERTY(DefaultComponent)
 	UActorSlotComponent SlotComponent;
