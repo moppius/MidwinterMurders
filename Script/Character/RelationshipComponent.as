@@ -57,6 +57,7 @@ class URelationshipComponent : UActorComponent
 		return false;
 	}
 
+#if TEST
 	void Print() const
 	{
 		FString String;
@@ -66,6 +67,7 @@ class URelationshipComponent : UActorComponent
 		}
 		Log(String);
 	}
+#endif
 };
 
 

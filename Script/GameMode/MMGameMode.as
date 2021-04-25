@@ -38,11 +38,6 @@ class AMMGameMode : AGameModeBase
 			auto Pawn = Cast<APawn>(SpawnActor(DefaultPawnClass, FindSpawnLocation()));
 			CharacterAI.Possess(Pawn);
 		}
-
-		for (auto CharacterAI : CharacterAIs)
-		{
-			CharacterAI.Relationship.Print();
-		}
 	}
 
 	private bool ShouldAddMoreCharacters() const
