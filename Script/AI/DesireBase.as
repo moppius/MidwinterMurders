@@ -27,7 +27,7 @@ class UDesireBase
 	{
 		TimeActive += DeltaSeconds;
 		Tick_Implementation(DeltaSeconds, DesireRequirements, Personality);
-		if (bIsActive && bIsSatisfied)
+		if (bIsActive && bIsSatisfied && TimeActive > 1.f)
 		{
 			Deactivate();
 		}
@@ -39,6 +39,7 @@ class UDesireBase
 		{
 			Log("Activating " + Type);
 		}
+		TimeActive = 0.f;
 		bIsActive = true;
 		bIsSatisfied = false;
 	}
